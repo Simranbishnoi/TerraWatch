@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TerraWatch - Editorial UI Preview</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-serif-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+    @keyframes pulse-overlay {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 0.75; }
+    }
+    .animate-pulse-overlay {
+      animation: pulse-overlay 2s ease-in-out infinite;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-[#F9F9F7] text-[#1A1A1A] antialiased min-h-screen flex flex-col selection:bg-[#5A6B4A]/20">
+
+  <!-- Floating Switcher Tab Bar -->
+  <div class="sticky top-0 z-50 bg-[#F9F9F7]/95 backdrop-blur border-b border-stone-200/80 px-6 py-2.5 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] animate-pulse"></span>
+      <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">TerraWatch Editorial System</span>
+    </div>
+    <div class="flex items-center gap-1.5 bg-stone-200/70 p-1 rounded-full text-xs font-medium text-gray-700">
+      <button id="tab-ocean" onclick="showTab('ocean')" class="px-4 py-1.5 rounded-full bg-white text-[#1A1A1A] shadow-sm transition-all font-semibold">
+        Ocean Plastic
+      </button>
+      <button id="tab-reports" onclick="showTab('reports')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
+        Reports
+      </button>
+      <button id="tab-farms" onclick="showTab('farms')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
+        Farms Table
+      </button>
+      <button id="tab-dashboard" onclick="showTab('dashboard')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
+        Dashboard
+      </button>
+      <button id="tab-login" onclick="showTab('login')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
+        Login Page
+      </button>
+      <button id="tab-signup" onclick="showTab('signup')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
+        Signup Page
+      </button>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none bg-[#1A1A1A] text-white text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">Notification</span>
+  </div>
+
+      <!-- ==================== OCEAN VIEW ==================== -->
+  <div id="view-ocean" class="flex-1 flex flex-col">
+    <!-- Navbar (h-16) -->
+    <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
+      <div class="flex items-center gap-3">
+        <span onclick="showTab('dashboard')" class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] cursor-pointer hover:opacity-90">
+          TerraWatch
+        </span>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="javascript:void(0)" onclick="showTab('dashboard')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Dashboard
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('farms')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Farms
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('reports')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Reports
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('ocean')" class="text-[#5A6B4A] border-b-2 border-[#5A6B4A] py-5 px-1 font-semibold cursor-pointer">
+          Ocean
+        </a>
+      </nav>
+
+      <div class="relative">
+        <button onclick="toggleUserDropdownOcean()" class="w-9 h-9 rounded-full bg-[#5A6B4A] text-white flex items-center justify-center text-sm font-medium shadow-sm hover:opacity-95 ring-2 ring-offset-2 ring-[#5A6B4A]/30 transition active:scale-95">
+          D
+        </button>
+        <div id="user-dropdown-ocean" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-400 font-medium">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">demo@terrawatch.com</p>
+          </div>
+          <button onclick="showTab('login'); showToast('Logged out');" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl w-full mx-auto px-6 sm:px-8 py-16 flex-1">
+      <!-- HERO SECTION -->
+      <div class="rounded-3xl overflow-hidden relative mb-12 h-96 shadow-lg">
+        <img
+          src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=1600&q=80"
+          alt="Ocean Plastic Satellite Analysis"
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-[#0F172A]/60 backdrop-blur-[1px]"></div>
+        <div class="absolute inset-0 p-8 sm:p-12 text-center flex flex-col items-center justify-center z-10">
+          <span class="text-xs tracking-widest text-white/80 mb-4 uppercase font-semibold">
+            PHASE 2 ROADMAP
+          </span>
+          <h1 class="font-serif-heading text-3xl sm:text-5xl text-white leading-tight font-medium max-w-2xl">
+            Same engine. Different environment.
+          </h1>
+          <p class="text-white/80 mt-4 max-w-lg text-base sm:text-lg font-normal leading-relaxed">
+            Extending TerraWatch satellite detection to ocean plastic mapping
+          </p>
+        </div>
+      </div>
+
+      <!-- CONTENT SECTION -->
+      <section class="mb-12">
+        <h2 class="font-serif-heading text-2xl text-gray-900 mb-6 font-medium">
+          How It Works
+        </h2>
+        <div class="space-y-4 bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100">
+          <div class="flex gap-4 items-start">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+            <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+              Sentinel-2 multispectral analysis of ocean surface
+            </p>
+          </div>
+          <div class="flex gap-4 items-start">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+            <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+              Identifies plastic windrows (dense floating patches)
+            </p>
+          </div>
+          <div class="flex gap-4 items-start">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+            <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+              Matches hotspots with local cleanup vessels
+            </p>
+          </div>
+          <div class="flex gap-4 items-start">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+            <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+              Blockchain-verified plastic recovery credits
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MARKET SECTION -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 mb-12 shadow-sm border border-gray-100">
+        <h2 class="font-serif-heading text-2xl text-gray-900 mb-8 font-medium">
+          Market Opportunity
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div class="flex flex-col items-center justify-center">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+              $1.2B
+            </div>
+            <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+              Plastic credits market (2025)
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+              $6.8B
+            </div>
+            <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+              Projected by 2034
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+              21.5%
+            </div>
+            <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+              CAGR
+            </div>
+          </div>
+          <div class="flex flex-col items-center justify-center">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+              Proven
+            </div>
+            <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+              By Recyclux, Plastic-i
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STATUS BANNER -->
+      <section class="bg-[#F9F9F7] border border-gray-200 rounded-3xl p-8 sm:p-10 text-center shadow-xs">
+        <p class="text-sm font-medium text-gray-500 mb-6 uppercase tracking-wider">
+          🔬 Research Phase — Not part of the 24-hour hackathon build
+        </p>
+        <button
+          onclick="showToast('You\x27re on the list!')"
+          class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-10 py-4 rounded-full text-sm font-medium hover:bg-[#4a5a3d] transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 gap-2"
+        >
+          <span>Join Waitlist</span>
+          <span class="text-base font-bold">↗</span>
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== REPORTS VIEW ==================== -->
+  <div id="view-reports" class="hidden flex-1 flex flex-col">
+    <!-- Navbar (h-16) -->
+    <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
+      <div class="flex items-center gap-3">
+        <span onclick="showTab('dashboard')" class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] cursor-pointer hover:opacity-90">
+          TerraWatch
+        </span>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="javascript:void(0)" onclick="showTab('dashboard')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Dashboard
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('farms')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Farms
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('reports')" class="text-[#5A6B4A] border-b-2 border-[#5A6B4A] py-5 px-1 font-semibold cursor-pointer">
+          Reports
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('ocean')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Ocean
+        </a>
+      </nav>
+
+      <div class="relative">
+        <button onclick="toggleUserDropdownReports()" class="w-9 h-9 rounded-full bg-[#5A6B4A] text-white flex items-center justify-center text-sm font-medium shadow-sm hover:opacity-95 ring-2 ring-offset-2 ring-[#5A6B4A]/30 transition active:scale-95">
+          D
+        </button>
+        <div id="user-dropdown-reports" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-400 font-medium">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">demo@terrawatch.com</p>
+          </div>
+          <button onclick="showTab('login'); showToast('Logged out');" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl w-full mx-auto px-6 sm:px-8 py-12 flex-1">
+      <div class="mb-8">
+        <h1 class="font-serif-heading text-4xl text-gray-900 font-medium tracking-tight">
+          Generated Reports
+        </h1>
+        <p class="text-gray-500 text-sm mt-1">
+          Download compliance evidence for your monitored farms
+        </p>
+      </div>
+
+      <!-- Reports Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Report Card 1 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0891</span>
+              <span class="bg-red-50 text-red-700 border border-red-100 px-2 py-0.5 rounded-full text-xs font-medium">HIGH</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Fazenda Santa Maria</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Oct 14, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.4 MB</span>
+            </div>
+          </div>
+          <button onclick="showToast('Report REP-2024-0891 downloaded')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 2 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0842</span>
+              <span class="bg-red-50 text-red-700 border border-red-100 px-2 py-0.5 rounded-full text-xs font-medium">HIGH</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Rancho Verde Norte</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Oct 12, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">3.1 MB</span>
+            </div>
+          </div>
+          <button onclick="showToast('Report REP-2024-0842 downloaded')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 3 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0799</span>
+              <span class="bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full text-xs font-medium">OK</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Fazenda Rio Bonito</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Sep 28, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">1.8 MB</span>
+            </div>
+          </div>
+          <button onclick="showToast('Report REP-2024-0799 downloaded')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== FARMS TABLE VIEW ==================== -->
+  <div id="view-farms" class="hidden flex-1 flex flex-col">
+    <!-- Navbar (h-16) -->
+    <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
+      <div class="flex items-center gap-3">
+        <span onclick="showTab('dashboard')" class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] cursor-pointer hover:opacity-90">
+          TerraWatch
+        </span>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="javascript:void(0)" onclick="showTab('dashboard')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Dashboard
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('farms')" class="text-[#5A6B4A] border-b-2 border-[#5A6B4A] py-5 px-1 font-semibold cursor-pointer">
+          Farms
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('reports')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Reports
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('ocean')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Ocean
+        </a>
+      </nav>
+
+      <div class="relative">
+        <button onclick="toggleUserDropdownFarms()" class="w-9 h-9 rounded-full bg-[#5A6B4A] text-white flex items-center justify-center text-sm font-medium shadow-sm hover:opacity-95 ring-2 ring-offset-2 ring-[#5A6B4A]/30 transition active:scale-95">
+          D
+        </button>
+        <div id="user-dropdown-farms" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-400 font-medium">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">demo@terrawatch.com</p>
+          </div>
+          <button onclick="showTab('login'); showToast('Logged out');" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl w-full mx-auto px-6 sm:px-8 py-12 flex-1">
+      <!-- Header Section -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+          <h1 class="font-serif-heading text-3xl sm:text-4xl text-gray-900 font-medium tracking-tight">
+            Monitored Farms
+          </h1>
+          <p class="text-gray-500 text-sm mt-1">
+            847 total farms tracked across the Amazon region
+          </p>
+        </div>
+        <div>
+          <button onclick="showToast('Cadastral ingestion wizard opened')" class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#4a5a3d] transition-all duration-200 shadow-sm active:scale-95 gap-1.5">
+            <span>+ Add Farm</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="relative mb-6 max-w-md">
+        <input
+          id="farm-search-input"
+          type="text"
+          oninput="handleSearchFarms(this.value)"
+          placeholder="Search farms by name..."
+          class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition-all shadow-xs"
+        />
+        <svg class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-[#F9F9F7] border-b border-gray-200 select-none">
+                <th onclick="sortFarms('name')" class="w-1/3 text-xs font-semibold uppercase tracking-wider text-gray-500 px-6 py-4 cursor-pointer hover:text-gray-800 transition">
+                  <div class="flex items-center gap-1.5">
+                    <span>Farm Name</span>
+                    <span id="sort-name-icon">↕</span>
+                  </div>
+                </th>
+                <th class="w-1/4 text-xs font-semibold uppercase tracking-wider text-gray-500 px-6 py-4">
+                  Location
+                </th>
+                <th onclick="sortFarms('status')" class="w-1/6 text-xs font-semibold uppercase tracking-wider text-gray-500 px-6 py-4 cursor-pointer hover:text-gray-800 transition">
+                  <div class="flex items-center gap-1.5">
+                    <span>Status</span>
+                    <span id="sort-status-icon">↕</span>
+                  </div>
+                </th>
+                <th onclick="sortFarms('loss')" class="w-1/6 text-xs font-semibold uppercase tracking-wider text-gray-500 px-6 py-4 cursor-pointer hover:text-gray-800 transition">
+                  <div class="flex items-center gap-1.5">
+                    <span>Lost (ha)</span>
+                    <span id="sort-loss-icon">↕</span>
+                  </div>
+                </th>
+                <th class="w-1/6 text-xs font-semibold uppercase tracking-wider text-gray-500 px-6 py-4 text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody id="farms-table-body" class="divide-y divide-gray-100 font-sans">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== DASHBOARD VIEW ==================== -->
+  <div id="view-dashboard" class="hidden flex-1 flex flex-col h-[calc(100vh-49px)] overflow-hidden">
+    <!-- Navbar (h-16) -->
+    <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="lg:hidden p-1.5 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span onclick="showTab('dashboard')" class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] cursor-pointer hover:opacity-90">TerraWatch</span>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="javascript:void(0)" onclick="showTab('dashboard')" class="text-[#5A6B4A] border-b-2 border-[#5A6B4A] py-5 px-1 font-semibold cursor-pointer">
+          Dashboard
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('farms')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Farms
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('reports')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Reports
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('ocean')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Ocean
+        </a>
+      </nav>
+
+      <div class="relative">
+        <button onclick="toggleUserDropdown()" class="w-9 h-9 rounded-full bg-[#5A6B4A] text-white flex items-center justify-center text-sm font-medium shadow-sm hover:opacity-95 ring-2 ring-offset-2 ring-[#5A6B4A]/30 transition active:scale-95">
+          D
+        </button>
+        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-400 font-medium">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">demo@terrawatch.com</p>
+          </div>
+          <button onclick="showTab('login'); showToast('Logged out');" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+      <!-- Left Sidebar (w-80 = 320px) -->
+      <aside id="sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col overflow-y-auto flex-shrink-0 z-20 transition-all duration-300">
+        <!-- Section A: Analyze Farm -->
+        <div class="p-6 border-b border-gray-100">
+          <h2 class="text-lg font-serif-heading text-gray-900 mb-4 font-medium">Analyze Farm</h2>
+          <form onsubmit="runAnalysis(event)">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Latitude</label>
+                <input id="coord-lat" type="number" step="any" value="-10.5124" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Longitude</label>
+                <input id="coord-lng" type="number" step="any" value="-62.2158" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 italic mt-2">Or click anywhere on the map</p>
+
+            <div class="space-y-3 mt-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Start Date</label>
+                <input type="date" value="2023-01-01" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-700" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">End Date</label>
+                <input type="date" value="2024-01-01" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-700" />
+              </div>
+            </div>
+
+            <button id="btn-analyze" type="submit" class="w-full mt-6 bg-[#5A6B4A] text-white py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-[#4a5a3d] transition-all duration-200 shadow-sm active:scale-95">
+              <span>Analyze</span>
+              <span class="text-base font-bold">↗</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Section B: Monitored Farms -->
+        <div class="p-6 flex-1">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Monitored Farms</h3>
+            <span class="text-xs text-gray-400 font-mono">5 tracked</span>
+          </div>
+          <div class="space-y-2">
+            <!-- Farm 1 -->
+            <button onclick="selectFarm(this, -10.5124, -62.2158, 'Fazenda Santa Maria')" class="farm-card w-full text-left p-3.5 rounded-xl border border-[#5A6B4A] ring-2 ring-[#5A6B4A] bg-[#F9F9F7] transition-all cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-medium text-gray-900 truncate">Fazenda Santa Maria</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-red-50 text-red-700 border border-red-100">HIGH</span>
+              </div>
+              <div class="text-xs text-gray-500 flex items-center justify-between font-sans">
+                <span>12.4 ha lost</span>
+                <span class="font-mono text-[11px] text-gray-400">-10.51°, -62.22°</span>
+              </div>
+            </button>
+
+            <!-- Farm 2 -->
+            <button onclick="selectFarm(this, -10.4289, -62.1542, 'Rancho Verde Norte')" class="farm-card w-full text-left p-3.5 rounded-xl border border-gray-100 hover:border-[#5A6B4A]/30 hover:bg-[#F9F9F7] transition-all cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-medium text-gray-900 truncate">Rancho Verde Norte</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-red-50 text-red-700 border border-red-100">HIGH</span>
+              </div>
+              <div class="text-xs text-gray-500 flex items-center justify-between font-sans">
+                <span>18.7 ha lost</span>
+                <span class="font-mono text-[11px] text-gray-400">-10.43°, -62.15°</span>
+              </div>
+            </button>
+
+            <!-- Farm 3 -->
+            <button onclick="selectFarm(this, -10.6311, -62.3105, 'Agroflorestal Nova Vida')" class="farm-card w-full text-left p-3.5 rounded-xl border border-gray-100 hover:border-[#5A6B4A]/30 hover:bg-[#F9F9F7] transition-all cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-medium text-gray-900 truncate">Agroflorestal Nova Vida</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-amber-50 text-amber-700 border border-amber-100">MEDIUM</span>
+              </div>
+              <div class="text-xs text-gray-500 flex items-center justify-between font-sans">
+                <span>5.2 ha lost</span>
+                <span class="font-mono text-[11px] text-gray-400">-10.63°, -62.31°</span>
+              </div>
+            </button>
+
+            <!-- Farm 4 -->
+            <button onclick="selectFarm(this, -10.3841, -62.0917, 'Fazenda Rio Bonito')" class="farm-card w-full text-left p-3.5 rounded-xl border border-gray-100 hover:border-[#5A6B4A]/30 hover:bg-[#F9F9F7] transition-all cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-medium text-gray-900 truncate">Fazenda Rio Bonito</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-green-50 text-green-700 border border-green-100">OK</span>
+              </div>
+              <div class="text-xs text-gray-500 flex items-center justify-between font-sans">
+                <span>0.0 ha lost</span>
+                <span class="font-mono text-[11px] text-gray-400">-10.38°, -62.09°</span>
+              </div>
+            </button>
+
+            <!-- Farm 5 -->
+            <button onclick="selectFarm(this, -10.5982, -62.1894, 'Estância Esperança')" class="farm-card w-full text-left p-3.5 rounded-xl border border-gray-100 hover:border-[#5A6B4A]/30 hover:bg-[#F9F9F7] transition-all cursor-pointer">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-medium text-gray-900 truncate">Estância Esperança</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-green-50 text-green-700 border border-green-100">OK</span>
+              </div>
+              <div class="text-xs text-gray-500 flex items-center justify-between font-sans">
+                <span>0.4 ha lost</span>
+                <span class="font-mono text-[11px] text-gray-400">-10.60°, -62.19°</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Area: Mapbox View -->
+      <main class="flex-1 relative h-full w-full bg-slate-900 overflow-hidden" onclick="handleMapClick(event)">
+        <!-- Map Style Toggle -->
+        <div class="absolute top-6 right-6 z-20" onclick="event.stopPropagation()">
+          <button onclick="toggleMapStyle()" class="flex items-center gap-1.5 bg-white/95 backdrop-blur hover:bg-gray-50 text-gray-800 text-xs font-medium px-3.5 py-2 rounded-full shadow-md border border-gray-200/80 transition-all active:scale-95">
+            <span id="map-style-label">🛰️ Satellite</span>
+          </button>
+        </div>
+
+        <!-- Satellite Image Base -->
+        <img id="map-img" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" alt="Satellite Imagery" class="w-full h-full object-cover opacity-90 contrast-110 pointer-events-none" />
+
+        
+        <!-- Dark overlay -->
+        <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+        <!-- Text overlay -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+          <h2 class="text-white text-3xl md:text-4xl lg:text-5xl font-serif tracking-wide drop-shadow-lg opacity-80" style="font-family: 'Playfair Display', Georgia, serif">
+            Amazon Rainforest - Rondônia Region
+          </h2>
+        </div>
+
+        <!-- Grid Lines Overlay -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+
+        <!-- Deforestation Overlays (SVG) -->
+        <svg class="absolute inset-0 w-full h-full pointer-events-none">
+          <!-- Submitted Cadastral Boundary (white dashed line) -->
+          <polygon points="460,200 640,180 710,350 530,420 430,300" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="8,5" />
+
+          <!-- Detected Deforestation Loss Polygon (Red fill pulsing) -->
+          <g id="loss-polygon" class="hidden animate-pulse-overlay">
+            <polygon points="480,220 620,200 670,330 540,390 450,280" fill="rgba(220, 38, 38, 0.55)" stroke="#DC2626" stroke-width="2" />
+            <circle cx="570" cy="290" r="16" fill="#DC2626" fill-opacity="0.4" />
+            <text x="570" y="295" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">
+              LOSS: 12.4 ha
+            </text>
+          </g>
+        </svg>
+
+        <!-- Map Marker Pin -->
+        <div id="map-pin" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center transition-all duration-700">
+          <div class="relative flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-8 w-8 rounded-full bg-[#5A6B4A] opacity-60"></span>
+            <div class="w-6 h-6 rounded-full bg-[#5A6B4A] border-2 border-white shadow-xl flex items-center justify-center text-xs text-white">
+              🛰️
+            </div>
+          </div>
+          <div id="pin-coords" class="mt-1 bg-black/75 backdrop-blur text-white text-[11px] font-mono px-2 py-0.5 rounded-full border border-white/20 whitespace-nowrap shadow-md">
+            -10.5124, -62.2158
+          </div>
+        </div>
+
+        <!-- Floating Legend (bottom-left) -->
+        <div class="absolute bottom-6 left-6 z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-4 border border-gray-100 min-w-[190px] animate-fade-in" onclick="event.stopPropagation()">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-800 mb-3">Legend</h4>
+          <div class="space-y-2 text-xs text-gray-700">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span>
+              <span>Compliant</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-600 shadow-sm"></span>
+              <span>High Risk</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm"></span>
+              <span>Medium Risk</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-4 h-0 border-t-2 border-dashed border-gray-700"></span>
+              <span>Submitted boundary</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-sm bg-red-600/70 border border-red-700"></span>
+              <span>Detected loss</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDING RESULTS PANEL (top-right) -->
+        <div id="results-panel" class="absolute top-6 right-6 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl p-6 max-h-[calc(100vh-6rem)] overflow-y-auto z-30 border border-gray-100 transition-all duration-500 ease-out translate-x-[120%] opacity-0 pointer-events-none" onclick="event.stopPropagation()">
+          <!-- Header Row -->
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="font-serif-heading text-xl text-gray-900 font-medium">Analysis Results</h3>
+            <button onclick="closeResultsPanel()" class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-700 flex items-center justify-center text-lg font-bold transition">
+              ✕
+            </button>
+          </div>
+
+          <!-- Risk Score Banner -->
+          <div class="rounded-2xl p-5 mb-5 bg-red-50 border border-red-100">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs uppercase tracking-wider text-gray-500 font-semibold">FRAUD RISK</span>
+              <span class="text-xs font-mono text-gray-500">87% confidence</span>
+            </div>
+            <div class="text-3xl font-serif-heading font-bold text-red-700 mb-3 tracking-tight">
+              HIGH
+            </div>
+            <!-- Progress Bar -->
+            <div class="h-2 bg-white/80 rounded-full overflow-hidden shadow-inner">
+              <div id="risk-progress-bar" class="h-full bg-red-500 rounded-full transition-all duration-1000 ease-out" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Two Stat Cards -->
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="bg-[#F9F9F7] rounded-xl p-4 border border-gray-100 hover:scale-[1.02] transition-transform duration-200">
+              <div class="text-xs text-gray-500 mb-1 font-medium">Hectares Lost</div>
+              <div class="text-2xl font-serif-heading text-gray-900 font-bold">12.4 ha</div>
+            </div>
+            <div class="bg-[#F9F9F7] rounded-xl p-4 border border-gray-100 hover:scale-[1.02] transition-transform duration-200">
+              <div class="text-xs text-gray-500 mb-1 font-medium">Manipulation Score</div>
+              <div class="text-2xl font-serif-heading text-gray-900 font-bold">0.87</div>
+            </div>
+          </div>
+
+          <!-- Before / After Temporal Imagery -->
+          <div class="mb-5">
+            <div class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Temporal Satellite Imagery</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="relative aspect-square rounded-xl overflow-hidden shadow-sm hover:scale-105 transition-transform duration-300 group cursor-pointer bg-gradient-to-br from-emerald-900 via-green-800 to-emerald-950 flex items-center justify-center">
+                <span class="text-emerald-100 text-xs font-mono font-medium z-10 opacity-85 group-hover:opacity-100">Intact Canopy</span>
+                <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur text-white text-[11px] font-mono px-2 py-0.5 rounded-full z-10">2023</div>
+              </div>
+              <div class="relative aspect-square rounded-xl overflow-hidden shadow-sm hover:scale-105 transition-transform duration-300 group cursor-pointer bg-gradient-to-br from-red-950 via-rose-900 to-amber-950 flex items-center justify-center">
+                <span class="text-rose-100 text-xs font-mono font-medium z-10 opacity-85 group-hover:opacity-100">Forest Loss</span>
+                <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur text-white text-[11px] font-mono px-2 py-0.5 rounded-full z-10">2024</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evidence Summary -->
+          <div class="bg-[#F9F9F7] rounded-xl p-4 mb-5 border border-gray-100">
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-800 mb-2.5">Evidence Summary</h4>
+            <ul class="space-y-2">
+              <li class="text-xs text-gray-600 leading-relaxed flex gap-2 items-start">
+                <span class="text-[#5A6B4A] font-bold text-sm leading-none mt-0.5">•</span>
+                <span>Satellite SAR coherence drops 42% along southwest forest corridor.</span>
+              </li>
+              <li class="text-xs text-gray-600 leading-relaxed flex gap-2 items-start">
+                <span class="text-[#5A6B4A] font-bold text-sm leading-none mt-0.5">•</span>
+                <span>Spectral analysis reveals illegal burn clearance conducted post-cut-off date.</span>
+              </li>
+              <li class="text-xs text-gray-600 leading-relaxed flex gap-2 items-start">
+                <span class="text-[#5A6B4A] font-bold text-sm leading-none mt-0.5">•</span>
+                <span>Cadastral property boundary overlaps directly with designated conservation polygon.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Download PDF Button -->
+          <button onclick="showToast('PDF EUDR Compliance Report generated')" class="w-full bg-[#5A6B4A] text-white py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-[#4a5a3d] transition-all duration-200 shadow-sm text-sm active:scale-95">
+            <span>Download PDF Report</span>
+            <span class="text-base font-bold">↗</span>
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== LOGIN VIEW ==================== -->
+  <div id="view-login" class="hidden flex-1 flex flex-col items-center justify-center px-6 py-8">
+    <div class="flex flex-col items-center mb-6">
+      <img src="terrawatch-logo.png" alt="TerraWatch Logo" class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain mix-blend-multiply drop-shadow-sm transition-transform hover:scale-105 duration-300" />
+    </div>
+    <h1 class="font-serif-heading text-3xl sm:text-4xl md:text-5xl font-medium text-[#1A1A1A] text-center mb-2 tracking-tight">
+      Welcome back.
+    </h1>
+    <p class="text-gray-600 text-sm sm:text-base text-center max-w-md mb-8 font-normal leading-relaxed">
+      The forensic lie detector for EUDR compliance.
+    </p>
+
+    <div class="bg-white rounded-[24px] shadow-xl p-8 sm:p-10 w-full max-w-md border border-gray-100">
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input type="email" required value="demo@terrawatch.com" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <input type="password" required value="demo123" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+        </div>
+        <button type="submit" class="w-full bg-[#5A6B4A] text-white py-3.5 rounded-full font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm text-base">
+          <span>Log In</span>
+          <span class="text-lg leading-none font-bold">↗</span>
+        </button>
+      </form>
+      <div class="mt-8 text-center text-sm text-gray-600">
+        No account? <a href="javascript:void(0)" onclick="showTab('signup')" class="text-[#5A6B4A] font-semibold hover:underline">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SIGNUP VIEW ==================== -->
+  <div id="view-signup" class="hidden flex-1 flex flex-col items-center justify-center px-6 py-8">
+    <div class="flex flex-col items-center mb-6">
+      <img src="terrawatch-logo.png" alt="TerraWatch Logo" class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain mix-blend-multiply drop-shadow-sm transition-transform hover:scale-105 duration-300" />
+    </div>
+    <h1 class="font-serif-heading text-3xl sm:text-4xl md:text-5xl font-medium text-[#1A1A1A] text-center mb-2 tracking-tight">
+      Create account.
+    </h1>
+    <p class="text-gray-600 text-sm sm:text-base text-center max-w-md mb-8 font-normal leading-relaxed">
+      The forensic lie detector for EUDR compliance.
+    </p>
+
+    <div class="bg-white rounded-[24px] shadow-xl p-8 sm:p-10 w-full max-w-md border border-gray-100">
+      <form onsubmit="handleSignupSubmit(event)" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+          <input type="text" required value="Jane Doe" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input type="email" required value="demo@terrawatch.com" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <input type="password" required value="demo123" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A]" />
+        </div>
+        <button type="submit" class="w-full bg-[#5A6B4A] text-white py-3.5 rounded-full font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm text-base">
+          <span>Create Account</span>
+          <span class="text-lg leading-none font-bold">↗</span>
+        </button>
+      </form>
+      <div class="mt-8 text-center text-sm text-gray-600">
+        Already have an account? <a href="javascript:void(0)" onclick="showTab('login')" class="text-[#5A6B4A] font-semibold hover:underline">Log in</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const INITIAL_FARMS = [
+      { id: 'farm-1', name: 'Fazenda Santa Maria', status: 'HIGH', loss: '12.4 ha', areaHa: 12.4, lat: -10.5124, lng: -62.2158 },
+      { id: 'farm-2', name: 'Rancho Verde Norte', status: 'HIGH', loss: '18.7 ha', areaHa: 18.7, lat: -10.4289, lng: -62.1542 },
+      { id: 'farm-3', name: 'Agroflorestal Nova Vida', status: 'MEDIUM', loss: '5.2 ha', areaHa: 5.2, lat: -10.6311, lng: -62.3105 },
+      { id: 'farm-4', name: 'Fazenda Rio Bonito', status: 'OK', loss: '0.0 ha', areaHa: 0.0, lat: -10.3841, lng: -62.0917 },
+      { id: 'farm-5', name: 'Estância Esperança', status: 'OK', loss: '0.4 ha', areaHa: 0.4, lat: -10.5982, lng: -62.1894 },
+    ];
+
+    let currentFarms = [...INITIAL_FARMS];
+    let farmSearch = '';
+    let sortKey = 'name';
+    let sortAsc = true;
+    let isSatellite = true;
+
+    function renderFarmsTable() {
+      const tbody = document.getElementById('farms-table-body');
+      let filtered = currentFarms.filter(f => f.name.toLowerCase().includes(farmSearch.toLowerCase()));
+
+      filtered.sort((a, b) => {
+        let valA = a[sortKey];
+        let valB = b[sortKey];
+        if (typeof valA === 'string') {
+          return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return sortAsc ? valA - valB : valB - valA;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-gray-500 text-sm">No farms found matching "${farmSearch}".</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(f => {
+        let badge = '';
+        if (f.status === 'HIGH') {
+          badge = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-100 shadow-xs">HIGH</span>`;
+        } else if (f.status === 'MEDIUM') {
+          badge = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100 shadow-xs">MEDIUM</span>`;
+        } else {
+          badge = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-100 shadow-xs">OK</span>`;
+        }
+
+        return `
+          <tr onclick="navigateToDashboard('${f.name}', ${f.lat}, ${f.lng})" class="hover:bg-[#F9F9F7] transition-colors duration-150 cursor-pointer group">
+            <td class="px-6 py-4 text-sm font-medium text-gray-900 group-hover:text-[#5A6B4A] transition-colors">
+              ${f.name}
+            </td>
+            <td class="px-6 py-4 text-sm font-mono text-gray-500">
+              ${f.lat.toFixed(4)}°, ${f.lng.toFixed(4)}°
+            </td>
+            <td class="px-6 py-4">
+              ${badge}
+            </td>
+            <td class="px-6 py-4 text-sm font-medium text-gray-700">
+              ${f.loss}
+            </td>
+            <td class="px-6 py-4 text-sm font-medium text-right">
+              <span class="text-[#5A6B4A] group-hover:underline inline-flex items-center gap-1">
+                View →
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function handleSearchFarms(val) {
+      farmSearch = val;
+      renderFarmsTable();
+    }
+
+    function sortFarms(key) {
+      if (sortKey === key) {
+        sortAsc = !sortAsc;
+      } else {
+        sortKey = key;
+        sortAsc = true;
+      }
+      document.getElementById('sort-name-icon').textContent = sortKey === 'name' ? (sortAsc ? '↑' : '↓') : '↕';
+      document.getElementById('sort-status-icon').textContent = sortKey === 'status' ? (sortAsc ? '↑' : '↓') : '↕';
+      document.getElementById('sort-loss-icon').textContent = sortKey === 'loss' ? (sortAsc ? '↑' : '↓') : '↕';
+      renderFarmsTable();
+    }
+
+    function navigateToDashboard(name, lat, lng) {
+      showToast(`Navigating to Dashboard for ${name}`);
+      document.getElementById('coord-lat').value = lat;
+      document.getElementById('coord-lng').value = lng;
+      document.getElementById('pin-coords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      showTab('dashboard');
+    }
+
+        const ALL_VIEWS = ['ocean', 'reports', 'farms', 'dashboard', 'login', 'signup'];
+
+    function showTab(tab) {
+      ALL_VIEWS.forEach(t => {
+        const viewEl = document.getElementById(`view-${t}`);
+        const tabEl = document.getElementById(`tab-${t}`);
+        if (viewEl) viewEl.classList.add('hidden');
+        if (tabEl) tabEl.className = "px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all";
+      });
+
+      const activeView = document.getElementById(`view-${tab}`);
+      const activeTab = document.getElementById(`tab-${tab}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeTab) activeTab.className = "px-4 py-1.5 rounded-full bg-white text-[#1A1A1A] shadow-sm font-semibold transition-all";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleUserDropdown() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+    }
+
+    function toggleUserDropdownOcean() {
+      document.getElementById('user-dropdown-ocean').classList.toggle('hidden');
+    }
+
+    function toggleUserDropdownReports() {
+      document.getElementById('user-dropdown-reports').classList.toggle('hidden');
+    }
+
+    function toggleUserDropdownFarms() {
+      document.getElementById('user-dropdown-farms').classList.toggle('hidden');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hidden');
+    }
+
+    function toggleMapStyle() {
+      isSatellite = !isSatellite;
+      const img = document.getElementById('map-img');
+      const lbl = document.getElementById('map-style-label');
+      if (isSatellite) {
+        lbl.textContent = '🛰️ Satellite';
+        img.className = "w-full h-full object-cover opacity-80 contrast-125 transition-all duration-500 pointer-events-none";
+      } else {
+        lbl.textContent = '🗺️ Terrain';
+        img.className = "w-full h-full object-cover opacity-35 invert contrast-150 transition-all duration-500 pointer-events-none";
+      }
+    }
+
+    function selectFarm(btn, lat, lng, name) {
+      document.querySelectorAll('.farm-card').forEach(c => {
+        c.className = "farm-card w-full text-left p-3.5 rounded-xl border border-gray-100 hover:border-[#5A6B4A]/30 hover:bg-[#F9F9F7] transition-all cursor-pointer";
+      });
+      btn.className = "farm-card w-full text-left p-3.5 rounded-xl border border-[#5A6B4A] ring-2 ring-[#5A6B4A] bg-[#F9F9F7] transition-all cursor-pointer";
+      document.getElementById('coord-lat').value = lat;
+      document.getElementById('coord-lng').value = lng;
+      document.getElementById('pin-coords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      showToast(`Selected ${name}`);
+    }
+
+    function handleMapClick(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      const newLng = Number((-62.35 + x * 0.3).toFixed(4));
+      const newLat = Number((-10.35 - y * 0.3).toFixed(4));
+      document.getElementById('coord-lat').value = newLat;
+      document.getElementById('coord-lng').value = newLng;
+      document.getElementById('pin-coords').textContent = `${newLat}, ${newLng}`;
+
+      const pin = document.getElementById('map-pin');
+      pin.style.left = `${e.clientX - rect.left}px`;
+      pin.style.top = `${e.clientY - rect.top}px`;
+    }
+
+    async function runAnalysis(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-analyze');
+      btn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Analyzing...</span>`;
+      btn.classList.add('animate-pulse');
+
+      let data = null;
+      try {
+        const response = await fetch('http://localhost:8000/api/analysis/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            farm_id: 1,
+            boundary: { type: "Polygon", coordinates: [[[-62.20, -10.50], [-62.19, -10.50], [-62.19, -10.51], [-62.20, -10.51], [-62.20, -10.50]]] },
+            start_date: document.getElementById('start-date')?.value || "2023-01-01",
+            end_date: document.getElementById('end-date')?.value || "2024-01-01",
+            previous_observation_date: "2023-06-01"
+          })
+        });
+        
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (err) {
+        console.warn("Backend call fallback:", err);
+      }
+
+      // Default demo values if backend data is not returned
+      const lossHa = data?.forest_loss_hectares != null ? Number(data.forest_loss_hectares).toFixed(1) : '12.4';
+      const riskScore = data?.risk_score_pct != null ? data.risk_score_pct : (data?.risk_score != null ? data.risk_score * 100 : 87);
+
+      // Display the loss polygon on the map
+      const lossPoly = document.getElementById('loss-polygon');
+      if (lossPoly) {
+        lossPoly.classList.remove('hidden');
+        const lossText = lossPoly.querySelector('text');
+        if (lossText) lossText.textContent = `LOSS: ${lossHa} ha`;
+      }
+      
+      // Open results panel
+      const panel = document.getElementById('results-panel');
+      if (panel) {
+        panel.classList.remove('translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+        panel.classList.add('translate-x-0', 'opacity-100', 'pointer-events-auto');
+      }
+
+      setTimeout(() => {
+        const bar = document.getElementById('risk-progress-bar');
+        if (bar) bar.style.width = `${riskScore}%`;
+      }, 150);
+
+      showToast('Analysis complete', true);
+
+      btn.innerHTML = `<span>Analyze</span><span class="text-base font-bold">↗</span>`;
+      btn.classList.remove('animate-pulse');
+    }
+
+
+    function closeResultsPanel() {
+      const panel = document.getElementById('results-panel');
+      panel.classList.remove('translate-x-0', 'opacity-100', 'pointer-events-auto');
+      panel.classList.add('translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+      document.getElementById('risk-progress-bar').style.width = '0%';
+    }
+
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-msg');
+
+      icon.textContent = isSuccess ? '✓' : '✕';
+      toast.className = `fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-none ${isSuccess ? 'bg-[#5A6B4A]' : 'bg-red-600'} text-white text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5`;
+      msg.textContent = message;
+
+      setTimeout(() => {
+        toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none bg-[#1A1A1A] text-white text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5";
+      }, 2500);
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      showToast('Welcome back — redirected to Dashboard');
+      setTimeout(() => showTab('dashboard'), 700);
+    }
+
+    function handleSignupSubmit(e) {
+      e.preventDefault();
+      showToast('Account created — welcome to TerraWatch');
+      setTimeout(() => showTab('dashboard'), 700);
+    }
+
+    // Initialize table on load
+    renderFarmsTable();
+  </script>
+</body>
+</html>

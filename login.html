@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TerraWatch - Log In</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-serif-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+  </style>
+</head>
+<body class="bg-[#F9F9F7] text-[#1A1A1A] antialiased min-h-screen flex flex-col selection:bg-[#5A6B4A]/20">
+
+  <!-- Top Navbar -->
+  <header class="w-full px-8 py-6 flex items-center justify-between">
+    <div class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A]">
+      TerraWatch
+    </div>
+    <nav class="hidden md:flex items-center space-x-8 text-sm text-gray-700">
+      <a href="preview.html" class="hover:text-[#5A6B4A] transition-colors">Dashboard</a>
+      <a href="preview.html" class="hover:text-[#5A6B4A] transition-colors">Farms</a>
+      <a href="preview.html" class="hover:text-[#5A6B4A] transition-colors">Reports</a>
+      <a href="ocean.html" class="hover:text-[#5A6B4A] transition-colors">Ocean</a>
+    </nav>
+    <div>
+      <a
+        href="login.html"
+        class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+      >
+        Log In
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center justify-center px-6 py-8">
+    <!-- Centered Logo -->
+    <div class="flex flex-col items-center mb-6">
+      <img
+        src="terrawatch-logo.png"
+        alt="TerraWatch Logo"
+        class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain mix-blend-multiply drop-shadow-sm transition-transform hover:scale-105 duration-300"
+      />
+    </div>
+
+    <!-- Scaled-down Headline -->
+    <h1 class="font-serif-heading text-3xl sm:text-4xl md:text-5xl font-medium text-[#1A1A1A] text-center mb-2 tracking-tight">
+      Welcome back.
+    </h1>
+
+    <!-- Subheadline -->
+    <p class="text-gray-600 text-sm sm:text-base text-center max-w-md mb-8 font-normal leading-relaxed">
+      The forensic lie detector for EUDR compliance.
+    </p>
+
+    <!-- Login Card -->
+    <div class="bg-white rounded-[24px] shadow-xl p-8 sm:p-10 w-full max-w-md border border-gray-100">
+      <form onsubmit="handleLogin(event)" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input
+            id="login-email"
+            type="email"
+            required
+            value="demo@terrawatch.com"
+            placeholder="you@company.com"
+            class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition-all"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <div class="relative">
+            <input
+              id="login-password"
+              type="password"
+              required
+              value="demo123"
+              placeholder="••••••••"
+              class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition-all"
+            />
+            <button
+              type="button"
+              onclick="togglePwd()"
+              id="toggle-pwd-btn"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 p-1 text-sm focus:outline-none"
+            >
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div id="login-msg" class="hidden p-3 rounded-xl text-sm font-medium"></div>
+
+        <button
+          id="submit-btn"
+          type="submit"
+          class="w-full bg-[#5A6B4A] text-white py-3.5 rounded-full font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm text-base"
+        >
+          <span>Log In</span>
+          <span class="text-lg leading-none font-bold">↗</span>
+        </button>
+      </form>
+
+      <div class="mt-8 text-center text-sm text-gray-600">
+        No account? <a href="#" onclick="toggleSignup(event)" class="text-[#5A6B4A] font-semibold hover:underline">Sign up</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function togglePwd() {
+      const p = document.getElementById('login-password');
+      const b = document.getElementById('toggle-pwd-btn');
+      if (p.type === 'password') {
+        p.type = 'text';
+        b.textContent = '🙈';
+      } else {
+        p.type = 'password';
+        b.textContent = '👁️';
+      }
+    }
+
+    let isSignupMode = false;
+    function toggleSignup(e) {
+      if (e) e.preventDefault();
+      isSignupMode = !isSignupMode;
+      const btn = document.getElementById('submit-btn');
+      const toggleLink = e ? e.target : null;
+      if (isSignupMode) {
+        btn.innerHTML = '<span>Create Account</span> <span class="text-lg leading-none font-bold">↗</span>';
+        if (toggleLink) toggleLink.textContent = 'Log In';
+      } else {
+        btn.innerHTML = '<span>Log In</span> <span class="text-lg leading-none font-bold">↗</span>';
+        if (toggleLink) toggleLink.textContent = 'Sign up';
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const msgBox = document.getElementById('login-msg');
+      const submitBtn = document.getElementById('submit-btn');
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = isSignupMode ? 'Creating account...' : 'Logging in...';
+      msgBox.className = 'hidden';
+
+      const endpoint = isSignupMode ? 'http://localhost:8000/signup' : 'http://localhost:8000/login';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || 'Request failed');
+        }
+
+        if (isSignupMode) {
+          // Auto-login after signup
+          const loginRes = await fetch('http://localhost:8000/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const loginData = await loginRes.json();
+          if (loginData.access_token) {
+            localStorage.setItem('token', loginData.access_token);
+            localStorage.setItem('tw_user', JSON.stringify({ email: email, token: loginData.access_token }));
+          }
+        } else if (data.access_token) {
+          localStorage.setItem('token', data.access_token);
+          localStorage.setItem('tw_user', JSON.stringify({ email: email, token: data.access_token }));
+        }
+
+        msgBox.className = 'p-3 rounded-xl text-sm font-medium bg-green-50 text-green-700 border border-green-200 block text-center';
+        msgBox.textContent = isSignupMode ? 'Account created! Redirecting...' : 'Login successful! Redirecting...';
+        setTimeout(() => {
+          window.location.href = 'preview.html';
+        }, 700);
+      } catch (err) {
+        msgBox.className = 'p-3 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 block text-center';
+        msgBox.textContent = err.message;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = isSignupMode 
+          ? '<span>Create Account</span> <span class="text-lg leading-none font-bold">↗</span>'
+          : '<span>Log In</span> <span class="text-lg leading-none font-bold">↗</span>';
+      }
+    }
+  </script>
+</body>
+</html>

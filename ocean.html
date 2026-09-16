@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TerraWatch - Ocean Plastic Phase 2</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-serif-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+  </style>
+</head>
+<body class="bg-[#F9F9F7] text-[#1A1A1A] antialiased min-h-screen flex flex-col selection:bg-[#5A6B4A]/20">
+
+  <!-- Top Navbar -->
+  <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
+    <div class="flex items-center gap-3">
+      <a href="preview.html" class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] hover:opacity-90">
+        TerraWatch
+      </a>
+    </div>
+
+    <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+      <a href="preview.html" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors">
+        Dashboard
+      </a>
+      <a href="preview.html" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors">
+        Farms
+      </a>
+      <a href="preview.html" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors">
+        Reports
+      </a>
+      <a href="ocean.html" class="text-[#5A6B4A] border-b-2 border-[#5A6B4A] py-5 px-1 font-semibold">
+        Ocean
+      </a>
+    </nav>
+
+    <!-- User Profile Dropdown -->
+    <div class="relative">
+      <button onclick="toggleUserDropdown()" class="w-9 h-9 rounded-full bg-[#5A6B4A] text-white flex items-center justify-center text-sm font-medium shadow-sm hover:opacity-95 ring-2 ring-offset-2 ring-[#5A6B4A]/30 transition active:scale-95">
+        D
+      </button>
+      <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+        <div class="px-4 py-2 border-b border-gray-100">
+          <p class="text-xs text-gray-400 font-medium">Signed in as</p>
+          <p class="text-sm font-semibold text-gray-900 truncate">demo@terrawatch.com</p>
+        </div>
+        <a href="login.html" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition">
+          Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none bg-[#1A1A1A] text-white text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">Notification</span>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl w-full mx-auto px-6 sm:px-8 py-16 flex-1">
+    <!-- HERO SECTION -->
+    <div class="rounded-3xl overflow-hidden relative mb-12 h-96 shadow-lg">
+      <img
+        src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=1600&q=80"
+        alt="Ocean Plastic Satellite Analysis"
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-[#0F172A]/60 backdrop-blur-[1px]"></div>
+      <div class="absolute inset-0 p-8 sm:p-12 text-center flex flex-col items-center justify-center z-10">
+        <span class="text-xs tracking-widest text-white/80 mb-4 uppercase font-semibold">
+          PHASE 2 ROADMAP
+        </span>
+        <h1 class="font-serif-heading text-3xl sm:text-5xl text-white leading-tight font-medium max-w-2xl">
+          Same engine. Different environment.
+        </h1>
+        <p class="text-white/80 mt-4 max-w-lg text-base sm:text-lg font-normal leading-relaxed">
+          Extending TerraWatch satellite detection to ocean plastic mapping
+        </p>
+      </div>
+    </div>
+
+    <!-- CONTENT SECTION -->
+    <section class="mb-12">
+      <h2 class="font-serif-heading text-2xl text-gray-900 mb-6 font-medium">
+        How It Works
+      </h2>
+      <div class="space-y-4 bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100">
+        <div class="flex gap-4 items-start">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+          <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+            Sentinel-2 multispectral analysis of ocean surface
+          </p>
+        </div>
+        <div class="flex gap-4 items-start">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+          <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+            Identifies plastic windrows (dense floating patches)
+          </p>
+        </div>
+        <div class="flex gap-4 items-start">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+          <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+            Matches hotspots with local cleanup vessels
+          </p>
+        </div>
+        <div class="flex gap-4 items-start">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] mt-2.5 flex-shrink-0"></span>
+          <p class="text-gray-600 text-base sm:text-lg leading-relaxed">
+            Blockchain-verified plastic recovery credits
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARKET SECTION -->
+    <section class="bg-white rounded-3xl p-8 sm:p-10 mb-12 shadow-sm border border-gray-100">
+      <h2 class="font-serif-heading text-2xl text-gray-900 mb-8 font-medium">
+        Market Opportunity
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div class="flex flex-col items-center justify-center">
+          <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+            $1.2B
+          </div>
+          <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+            Plastic credits market (2025)
+          </div>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+          <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+            $6.8B
+          </div>
+          <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+            Projected by 2034
+          </div>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+          <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+            21.5%
+          </div>
+          <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+            CAGR
+          </div>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+          <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-bold tracking-tight">
+            Proven
+          </div>
+          <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide font-medium leading-normal">
+            By Recyclux, Plastic-i
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATUS BANNER -->
+    <section class="bg-[#F9F9F7] border border-gray-200 rounded-3xl p-8 sm:p-10 text-center shadow-xs">
+      <p class="text-sm font-medium text-gray-500 mb-6 uppercase tracking-wider">
+        🔬 Research Phase — Not part of the 24-hour hackathon build
+      </p>
+      <button
+        onclick="showToast('You\'re on the list!')"
+        class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-10 py-4 rounded-full text-sm font-medium hover:bg-[#4a5a3d] transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 gap-2"
+      >
+        <span>Join Waitlist</span>
+        <span class="text-base font-bold">↗</span>
+      </button>
+    </section>
+  </main>
+
+  <script>
+    function toggleUserDropdown() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+    }
+
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-msg');
+
+      icon.textContent = isSuccess ? '✓' : '✕';
+      toast.className = `fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-none ${isSuccess ? 'bg-[#5A6B4A]' : 'bg-red-600'} text-white text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5`;
+      msg.textContent = message;
+
+      setTimeout(() => {
+        toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none bg-[#1A1A1A] text-white text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5";
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+satellite:
+  collection: "COPERNICUS/S2_SR_HARMONIZED"
+  cloud_collection: "COPERNICUS/S2_CLOUD_PROBABILITY"
+  scale_meters: 10                  # Sentinel-2 native resolution
+  max_pixels: 1.0e10
+
+bands:
+  red: "B4"
+  nir: "B8"
+  swir1: "B11"
+  swir2: "B12"
+  blue: "B2"
+  green: "B3"
+
+gee:
+  max_retries: 3
+  timeout_seconds: 120

@@ -1,0 +1,28 @@
+quality:
+  minimum_usable_pixels: 70          # % of farm pixels that must be cloud-free
+  cloud_probability_threshold: 50    # cloud-prob < 50 = clear pixel
+  high_quality_min: 85               # usable% >= 85 → HIGH
+  medium_quality_min: 70             # usable% >= 70 → MEDIUM
+
+observation:
+  max_cloud_cover_pct: 80            # pre-filter; skip images > 80% cloudy
+  search_window_days: 30             # look-back window when no explicit end date
+
+change:
+  ndvi_decline_threshold: -0.20      # delta NDVI < -0.20 = potential decline
+  ndmi_decline_threshold: -0.15      # delta NDMI < -0.15 = potential moisture loss
+  min_change_pixels: 10              # ignore patches < 10 connected pixels
+
+forest:
+  vegetation_ndvi_min: 0.35          # NDVI >= 0.35 → vegetated/forest-like
+  forest_ndvi_min: 0.50              # NDVI >= 0.50 → likely forest
+  minimum_cluster_hectares: 0.10     # ignore loss patches < 0.10 ha (noise)
+
+risk:
+  low_max: 30
+  medium_max: 60
+  high_max: 85
+  # > high_max = VERY_HIGH
+
+boundary:
+  buffer_meters: 50                  # buffer around farm polygon for edge effects

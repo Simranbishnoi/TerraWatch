@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "description": "TerraWatch training data schema",
+  "label_classes": {
+    "0": "no_significant_change",
+    "1": "vegetation_change",
+    "2": "potential_forest_loss",
+    "3": "requires_verification"
+  },
+  "validation_cases": [
+    "case_001_stable_forest",
+    "case_002_clear_vegetation_loss",
+    "case_003_crop_change",
+    "case_004_cloudy_observation",
+    "case_005_water_body",
+    "case_006_bare_soil",
+    "case_007_loss_inside_boundary",
+    "case_008_loss_outside_boundary"
+  ],
+  "metrics_required": ["precision", "recall", "f1", "confusion_matrix"],
+  "notes": "Do not use accuracy alone. False positives matter for deforestation detection."
+}

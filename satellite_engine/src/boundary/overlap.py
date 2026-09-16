@@ -52,7 +52,7 @@ def calculate_overlap(
             maxPixels=1e10,
             bestEffort=True,
         )
-        .get("nd")  # normalizedDifference band is named "nd" by GEE default
+        .get("loss_mask")
     )
 
     # ── Loss inside farm boundary ─────────────────────────────────────────
@@ -67,7 +67,7 @@ def calculate_overlap(
             maxPixels=1e10,
             bestEffort=True,
         )
-        .get("nd")
+        .get("loss_mask")
     )
 
     # Execute both at once

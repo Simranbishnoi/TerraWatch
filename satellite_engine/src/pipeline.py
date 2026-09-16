@@ -352,6 +352,7 @@ def run_satellite_analysis(request: Dict[str, Any]) -> Dict[str, Any]:
             forest_area_before_ha=loss.get("forest_area_before_ha"),
             forest_area_after_ha=loss.get("forest_area_after_ha"),
             forest_loss_hectares=loss.get("forest_loss_hectares"),
+            deforestation_percentage=loss.get("loss_percentage"),
         ),
 
         risk=RiskInfo(

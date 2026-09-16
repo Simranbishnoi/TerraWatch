@@ -190,9 +190,14 @@ def get_true_color_thumb_url(
             "format": "jpg",
         })
         return url
-    except Exception as exc:
-        print(f"[image_processor] Warning: Could not generate thumbnail URL: {exc}")
-        return None
+    except Exception:
+        # Fallback: try getMapId (returns tile URL, less permissions required)
+        try:
+            map_id = image.getMapId({"bands": ["B4", "B3", "B2"], "min": 0, "max": 3000})
+            return map_id.get("tile_fetcher", {}).urlformat if hasattr(map_id.get("tile_fetcher", {}), "urlformat") else None
+        except Exception as exc:
+            print(f"[image_processor] Warning: Could not generate thumbnail URL: {exc}")
+            return None
 
 
 def get_ndvi_thumb_url(

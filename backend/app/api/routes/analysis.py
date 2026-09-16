@@ -1,14 +1,39 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.analysis import Analysis
 from app.models.farm import Farm
-from app.schemas.analysis import AnalysisCreate, AnalysisResponse
+from app.schemas.analysis import AnalysisCreate, AnalysisResponse, SatelliteAnalysisTrigger
+from app.services.satellite_service import run_analysis_for_farm
 
 router = APIRouter()
+
+
+@router.post("/trigger/{farm_id}")
+def trigger_satellite_analysis(
+    farm_id: int,
+    body: SatelliteAnalysisTrigger = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Trigger a live satellite analysis for a farm via Greeshma's engine.
+    Returns real Sentinel-2 NDVI, forest loss, and risk data.
+    """
+    try:
+        result = run_analysis_for_farm(
+            db=db,
+            farm_id=farm_id,
+            start_date=body.start_date if body else None,
+            end_date=body.end_date if body else None,
+        )
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Satellite analysis error: {exc}")
 
 
 @router.post("/", response_model=AnalysisResponse, status_code=201)

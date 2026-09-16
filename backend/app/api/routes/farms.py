@@ -3,17 +3,25 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
 from app.db.database import get_db
 from app.models.farm import Farm
+from app.models.user import User
 from app.schemas.farm import FarmCreate, FarmResponse
+
 
 router = APIRouter()
 
 
-@router.post("/", response_model=FarmResponse, status_code=201)
+@router.post(
+    "/",
+    response_model=FarmResponse,
+    status_code=201
+)
 def create_farm(
     farm_data: FarmCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     farm = Farm(**farm_data.model_dump())
 
@@ -24,19 +32,31 @@ def create_farm(
     return farm
 
 
-@router.get("/", response_model=List[FarmResponse])
+@router.get(
+    "/",
+    response_model=List[FarmResponse]
+)
 def get_farms(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    return db.query(Farm).order_by(Farm.created_at.desc()).all()
+    return db.query(Farm).order_by(
+        Farm.created_at.desc()
+    ).all()
 
 
-@router.get("/{farm_id}", response_model=FarmResponse)
+@router.get(
+    "/{farm_id}",
+    response_model=FarmResponse
+)
 def get_farm(
     farm_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    farm = db.query(Farm).filter(Farm.id == farm_id).first()
+    farm = db.query(Farm).filter(
+        Farm.id == farm_id
+    ).first()
 
     if not farm:
         raise HTTPException(
@@ -47,12 +67,18 @@ def get_farm(
     return farm
 
 
-@router.delete("/{farm_id}", status_code=204)
+@router.delete(
+    "/{farm_id}",
+    status_code=204
+)
 def delete_farm(
     farm_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    farm = db.query(Farm).filter(Farm.id == farm_id).first()
+    farm = db.query(Farm).filter(
+        Farm.id == farm_id
+    ).first()
 
     if not farm:
         raise HTTPException(

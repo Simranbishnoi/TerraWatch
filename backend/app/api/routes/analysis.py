@@ -8,11 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
 from app.db.database import get_db
 from app.models.analysis import Analysis
 from app.models.farm import Farm
-from app.schemas.analysis import AnalysisCreate, AnalysisResponse, SatelliteAnalysisTrigger
-from app.services.satellite_service import run_analysis_for_farm, run_analysis_direct
+from app.schemas.analysis import AnalysisCreate, AnalysisResponse
 
 router = APIRouter()
 
@@ -83,10 +83,15 @@ def trigger_satellite_analysis(
 
 # ── Standard CRUD ─────────────────────────────────────────────────────────────
 
-@router.post("/", response_model=AnalysisResponse, status_code=201)
+@router.post(
+    "/",
+    response_model=AnalysisResponse,
+    status_code=201
+)
 def create_analysis(
     analysis_data: AnalysisCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     farm = db.query(Farm).filter(Farm.id == analysis_data.farm_id).first()
     if not farm:
@@ -99,13 +104,23 @@ def create_analysis(
 
 
 @router.get("/", response_model=List[AnalysisResponse])
-def get_analyses(db: Session = Depends(get_db)):
-    return db.query(Analysis).order_by(Analysis.created_at.desc()).all()
+def get_analyses(
+    db: Session = Depends(get_db)
+):
+    return db.query(Analysis).order_by(
+        Analysis.created_at.desc()
+    ).all()
 
 
 @router.get("/{analysis_id}", response_model=AnalysisResponse)
-def get_analysis(analysis_id: int, db: Session = Depends(get_db)):
-    analysis = db.query(Analysis).filter(Analysis.id == analysis_id).first()
+def get_analysis(
+    analysis_id: int,
+    db: Session = Depends(get_db)
+):
+    analysis = db.query(Analysis).filter(
+        Analysis.id == analysis_id
+    ).first()
+
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
     return analysis

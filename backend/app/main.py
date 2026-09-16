@@ -1,24 +1,31 @@
 from fastapi import FastAPI
 
-from app.db.database import Base, engine
-from app.db import base
-
-from app.api.routes import health, farms, analysis, reports
-
-
-app = FastAPI(
-    title="TerraWatch API",
-    description="Deforestation Monitoring and Verification Platform",
-    version="1.0.0"
+from app.core.config import settings
+from app.api.routes import (
+    health,
+    farms,
+    analysis,
+    reports,
+    auth
 )
 
 
-Base.metadata.create_all(bind=engine)
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION
+)
+
+
+@app.get("/")
+def root():
+    return {
+        "message": "TerraWatch API is running"
+    }
 
 
 app.include_router(
     health.router,
-    prefix="/api",
+    prefix="/api/health",
     tags=["Health"]
 )
 
@@ -40,9 +47,8 @@ app.include_router(
     tags=["Reports"]
 )
 
-
-@app.get("/")
-def root():
-    return {
-        "message": "TerraWatch backend is running"
-    }
+app.include_router(
+    auth.router,
+    prefix="/api/auth",
+    tags=["Authentication"]
+)

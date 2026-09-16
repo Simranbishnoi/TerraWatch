@@ -5,8 +5,9 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('tw_user');
-    return saved ? JSON.parse(saved) : { email: 'demo@terrawatch.com', token: 'mock-token' };
+    return saved ? JSON.parse(saved) : null;
   });
+
 
   const loginUser = (token, email) => {
     const userData = { email, token };
@@ -29,11 +30,13 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('tw_user') : null;
     return {
-      user: { email: 'demo@terrawatch.com', token: 'mock-token' },
+      user: saved ? JSON.parse(saved) : null,
       loginUser: () => {},
       logoutUser: () => {},
     };
   }
   return ctx;
 }
+

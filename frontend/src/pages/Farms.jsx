@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getFarms } from '../api/client';
+import { getFarms, addFarm } from '../api/client';
 import Navbar from '../components/Navbar';
+import AddFarmModal from '../components/AddFarmModal';
 
 export default function Farms() {
   const [farms, setFarms] = useState([]);
@@ -10,28 +11,44 @@ export default function Farms() {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc'); // 'asc' | 'desc'
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const loadFarmsList = async () => {
+    try {
+      setLoading(true);
+      const data = await getFarms();
+      // Normalize farm attributes
+      const normalized = (data || []).map((f) => ({
+        ...f,
+        lat: f.latitude ?? f.lat ?? 0,
+        lng: f.longitude ?? f.lng ?? 0,
+        loss: f.loss ?? `${f.hectares_lost ?? 0} ha lost`,
+        areaHa: f.hectares_lost ?? f.areaHa ?? 0,
+      }));
+      setFarms(normalized);
+    } catch (err) {
+      toast.error('Failed to load farms');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Load farms on mount
   useEffect(() => {
-    let isMounted = true;
-    async function load() {
-      try {
-        const data = await getFarms();
-        if (isMounted) {
-          setFarms(data || []);
-        }
-      } catch (err) {
-        toast.error('Failed to load farms');
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      isMounted = false;
-    };
+    loadFarmsList();
   }, []);
+
+  const handleCreateFarm = async (farmData) => {
+    try {
+      const created = await addFarm(farmData);
+      toast.success(`Farm "${created.name || farmData.name}" added successfully!`);
+      // Reload list
+      await loadFarmsList();
+    } catch (err) {
+      toast.error(err?.message || 'Could not create farm');
+    }
+  };
 
   // Filter & Sort
   const filteredFarms = useMemo(() => {
@@ -74,8 +91,9 @@ export default function Farms() {
   };
 
   const handleAddFarm = () => {
-    toast.success('Cadastral parcel ingestion wizard opening...');
+    setIsModalOpen(true);
   };
+
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -267,6 +285,14 @@ export default function Farms() {
           </div>
         </div>
       </main>
+
+      {/* Add Farm Modal */}
+      <AddFarmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onFarmAdded={handleCreateFarm}
+      />
     </div>
   );
 }
+

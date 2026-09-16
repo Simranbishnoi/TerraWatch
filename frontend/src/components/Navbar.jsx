@@ -59,6 +59,16 @@ export default function Navbar({ activePage = 'dashboard' }) {
           Reports
         </Link>
         <Link
+          to="/business"
+          className={`py-5 px-1 transition-colors ${
+            activePage === 'business'
+              ? 'text-[#5A6B4A] border-b-2 border-[#5A6B4A] font-semibold'
+              : 'text-gray-600 hover:text-[#5A6B4A]'
+          }`}
+        >
+          Business
+        </Link>
+        <Link
           to="/ocean"
           className={`py-5 px-1 transition-colors ${
             activePage === 'ocean'

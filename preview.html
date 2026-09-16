@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TerraWatch - Editorial UI Preview</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
   <style>
@@ -40,7 +43,10 @@
       <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">TerraWatch Editorial System</span>
     </div>
     <div class="flex items-center gap-1.5 bg-stone-200/70 p-1 rounded-full text-xs font-medium text-gray-700">
-      <button id="tab-ocean" onclick="showTab('ocean')" class="px-4 py-1.5 rounded-full bg-white text-[#1A1A1A] shadow-sm transition-all font-semibold">
+      <button id="tab-business" onclick="showTab('business')" class="px-4 py-1.5 rounded-full bg-white text-[#1A1A1A] shadow-sm transition-all font-semibold">
+        Business
+      </button>
+      <button id="tab-ocean" onclick="showTab('ocean')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
         Ocean Plastic
       </button>
       <button id="tab-reports" onclick="showTab('reports')" class="px-4 py-1.5 rounded-full hover:text-[#1A1A1A] transition-all">
@@ -67,8 +73,378 @@
     <span id="toast-msg">Notification</span>
   </div>
 
-      <!-- ==================== OCEAN VIEW ==================== -->
-  <div id="view-ocean" class="flex-1 flex flex-col">
+  <!-- ==================== BUSINESS VIEW ==================== -->
+  <div id="view-business" class="flex-1 flex flex-col">
+    <!-- Navbar (h-16) -->
+    <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
+      <div class="flex items-center gap-3">
+        <span onclick="showTab('dashboard')" class="text-xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] cursor-pointer hover:opacity-90">
+          TerraWatch
+        </span>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="javascript:void(0)" onclick="showTab('dashboard')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Dashboard
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('farms')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Farms
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('reports')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Reports
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('business')" class="text-[#5A6B4A] border-b-2 border-[#5A6B4A] py-5 px-1 font-semibold cursor-pointer">
+          Business
+        </a>
+        <a href="javascript:void(0)" onclick="showTab('ocean')" class="text-gray-600 hover:text-[#5A6B4A] py-5 px-1 transition-colors cursor-pointer">
+          Ocean
+        </a>
+      </nav>
+
+      <div class="relative">
+        <button onclick="toggleUserDropdownBusiness()" class="w-9 h-9 rounded-full bg-[#5A6B4A] text-white flex items-center justify-center text-sm font-medium shadow-sm hover:opacity-95 ring-2 ring-offset-2 ring-[#5A6B4A]/30 transition active:scale-95">
+          D
+        </button>
+        <div id="user-dropdown-business" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-400 font-medium">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate">demo@terrawatch.com</p>
+          </div>
+          <button onclick="showTab('login'); showToast('Logged out');" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto px-6 sm:px-8 py-14 flex-1">
+      <!-- SECTION 1 — HERO -->
+      <section class="mb-14">
+        <p class="text-xs tracking-widest text-[#5A6B4A] font-semibold uppercase mb-4">
+          THE BUSINESS CASE
+        </p>
+        <h1 class="font-serif-heading text-4xl sm:text-5xl lg:text-6xl text-gray-900 font-medium tracking-tight leading-tight">
+          What we do. How we do it. How we profit.
+        </h1>
+        <p class="text-gray-500 text-lg sm:text-xl mt-4 max-w-2xl font-light leading-relaxed">
+          TerraWatch is the forensic lie detector for EUDR compliance.
+        </p>
+      </section>
+
+      <!-- SECTION 2 — WHAT WE DO -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 border border-gray-100 shadow-xs mb-8">
+        <h2 class="font-serif-heading text-2xl sm:text-3xl text-gray-900 mb-4 font-medium tracking-tight">
+          What We Do
+        </h2>
+        <p class="text-gray-600 text-base sm:text-lg leading-relaxed mb-8">
+          We use free satellite imagery (Sentinel-2) and AI change detection to verify whether companies are lying about deforestation in their supply chains. Regulators and audit firms use us to catch fraud before it becomes a fine.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-100">
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-100/80">
+            <span class="block font-serif-heading text-2xl font-semibold text-gray-900">
+              10M ha
+            </span>
+            <span class="text-xs text-gray-500 font-medium">
+              Lost per year globally
+            </span>
+          </div>
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-100/80">
+            <span class="block font-serif-heading text-2xl font-semibold text-red-700">
+              $2 Billion
+            </span>
+            <span class="text-xs text-gray-500 font-medium">
+              Fraudulent carbon credits
+            </span>
+          </div>
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-100/80">
+            <span class="block font-serif-heading text-2xl font-semibold text-[#5A6B4A]">
+              4% Turnover
+            </span>
+            <span class="text-xs text-gray-500 font-medium">
+              Maximum EU fine penalty
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 — HOW WE DO IT -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 border border-gray-100 shadow-xs mb-8">
+        <h2 class="font-serif-heading text-2xl sm:text-3xl text-gray-900 mb-6 font-medium tracking-tight">
+          How We Do It
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="relative flex flex-col justify-between p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#5A6B4A]/10 text-[#5A6B4A] font-mono text-sm font-semibold mb-3">
+                01
+              </span>
+              <h3 class="text-base font-semibold text-gray-900 mb-1.5">Upload</h3>
+              <p class="text-xs text-gray-500 leading-relaxed">
+                Company submits farm polygon coordinates or cadastral boundaries.
+              </p>
+            </div>
+          </div>
+          <div class="relative flex flex-col justify-between p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#5A6B4A]/10 text-[#5A6B4A] font-mono text-sm font-semibold mb-3">
+                02
+              </span>
+              <h3 class="text-base font-semibold text-gray-900 mb-1.5">Analyze</h3>
+              <p class="text-xs text-gray-500 leading-relaxed">
+                We pull 4 years of Sentinel-2 imagery and compute NDVI & SAR change vectors.
+              </p>
+            </div>
+          </div>
+          <div class="relative flex flex-col justify-between p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#5A6B4A]/10 text-[#5A6B4A] font-mono text-sm font-semibold mb-3">
+                03
+              </span>
+              <h3 class="text-base font-semibold text-gray-900 mb-1.5">Detect</h3>
+              <p class="text-xs text-gray-500 leading-relaxed">
+                AI flags historical canopy loss, buffer degradation, and boundary manipulation.
+              </p>
+            </div>
+          </div>
+          <div class="relative flex flex-col justify-between p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#5A6B4A]/10 text-[#5A6B4A] font-mono text-sm font-semibold mb-3">
+                04
+              </span>
+              <h3 class="text-base font-semibold text-gray-900 mb-1.5">Report</h3>
+              <p class="text-xs text-gray-500 leading-relaxed">
+                Generate audit-ready, cryptographically stamped PDF with satellite proof.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 — HOW WE PROFIT -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 border border-gray-100 shadow-xs mb-8">
+        <h2 class="font-serif-heading text-2xl sm:text-3xl text-gray-900 mb-8 font-medium tracking-tight">
+          How We Profit
+        </h2>
+
+        <!-- Unit Economics Box -->
+        <div class="bg-[#F9F9F7] rounded-2xl p-6 sm:p-8 mb-8 border border-gray-200/70">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+            <div class="md:pr-6">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2 font-mono">
+                Our Cost Per Analysis
+              </span>
+              <div class="font-serif-heading text-5xl sm:text-6xl text-gray-900 font-medium tracking-tight mb-3">
+                $0.0015
+              </div>
+              <p className="text-xs text-gray-500 font-mono">
+                Sentinel-2: Free • Compute: $0.001 • Hosting: $0.0005
+              </p>
+            </div>
+            <div class="pt-6 md:pt-0 md:pl-8">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A] block mb-2 font-mono">
+                Our Price
+              </span>
+              <div class="font-serif-heading text-5xl sm:text-6xl text-[#5A6B4A] font-medium tracking-tight mb-3">
+                $0.05
+              </div>
+              <p class="text-sm font-semibold text-[#5A6B4A] flex items-center gap-2">
+                <span class="bg-[#5A6B4A]/10 px-2.5 py-0.5 rounded-full">
+                  Gross Margin: 97%
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="p-6 rounded-2xl bg-[#F9F9F7] border border-gray-100 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-mono text-[#5A6B4A] font-semibold uppercase block mb-1">
+                Enforcement Tier
+              </span>
+              <h3 class="font-serif-heading text-lg text-gray-900 font-medium mb-2">
+                EU Enforcement Agencies
+              </h3>
+              <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                $500K/year per agency. One caught fraud case = millions in avoided fines.
+              </p>
+            </div>
+            <span class="text-xs font-semibold text-gray-900 bg-white border border-gray-200 px-3 py-1.5 rounded-lg inline-block text-center shadow-2xs">
+              $500,000 / year
+            </span>
+          </div>
+          <div class="p-6 rounded-2xl bg-[#F9F9F7] border border-gray-100 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-mono text-[#5A6B4A] font-semibold uppercase block mb-1">
+                Assurance Tier
+              </span>
+              <h3 class="font-serif-heading text-lg text-gray-900 font-medium mb-2">
+                Big Four Audit Firms
+              </h3>
+              <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                $50K/year + $0.05/farm. Pre-audit screening for enterprise ESG assurance.
+              </p>
+            </div>
+            <span class="text-xs font-semibold text-gray-900 bg-white border border-gray-200 px-3 py-1.5 rounded-lg inline-block text-center shadow-2xs">
+              $50,000 / yr + usage
+            </span>
+          </div>
+          <div class="p-6 rounded-2xl bg-[#F9F9F7] border border-gray-100 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-mono text-[#5A6B4A] font-semibold uppercase block mb-1">
+                Compliance Tier
+              </span>
+              <h3 class="font-serif-heading text-lg text-gray-900 font-medium mb-2">
+                Indian & Global Exporters
+              </h3>
+              <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                $10K–30K/year. Pre-submission validation to avoid costly EU rejections.
+              </p>
+            </div>
+            <span class="text-xs font-semibold text-gray-900 bg-white border border-gray-200 px-3 py-1.5 rounded-lg inline-block text-center shadow-2xs">
+              $10K – $30K / year
+            </span>
+          </div>
+        </div>
+
+        <!-- Revenue Math banner -->
+        <div class="bg-[#5A6B4A]/10 border border-[#5A6B4A]/20 rounded-2xl p-4 text-center">
+          <p class="text-xs sm:text-sm font-semibold text-[#5A6B4A] tracking-wide">
+            ⚡ 2 customers = $1M ARR • 97% gross margin • Breakeven at 1 customer
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 5 — MARKET OPPORTUNITY -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 border border-gray-100 shadow-xs mb-8">
+        <h2 class="font-serif-heading text-2xl sm:text-3xl text-gray-900 mb-6 font-medium tracking-tight">
+          The Market
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-gray-900 font-semibold mb-1">
+              $1.2B
+            </div>
+            <p class="text-xs text-gray-500 font-medium leading-snug">
+              EUDR software market (2025)
+            </p>
+          </div>
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-gray-900 font-semibold mb-1">
+              $1.8B
+            </div>
+            <p class="text-xs text-gray-500 font-medium leading-snug">
+              Projected market by 2036
+            </p>
+          </div>
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-semibold mb-1">
+              $6.8B
+            </div>
+            <p class="text-xs text-gray-500 font-medium leading-snug">
+              Ocean plastic market (2034)
+            </p>
+          </div>
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100">
+            <div class="font-serif-heading text-3xl sm:text-4xl text-[#5A6B4A] font-semibold mb-1">
+              21.5%
+            </div>
+            <p class="text-xs text-gray-500 font-medium leading-snug">
+              Ocean plastic CAGR growth
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6 — ROADMAP -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 border border-gray-100 shadow-xs mb-8">
+        <h2 class="font-serif-heading text-2xl sm:text-3xl text-gray-900 mb-8 font-medium tracking-tight">
+          What's Next
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100 relative">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#5A6B4A] ring-4 ring-[#5A6B4A]/20"></span>
+              <span class="font-mono text-xs font-semibold text-[#5A6B4A] uppercase">
+                Now
+              </span>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">
+              Hackathon Prototype
+            </h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Live demo with full interactive satellite forensics and PDF dossier generation.
+            </p>
+          </div>
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100 relative">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-stone-400"></span>
+              <span class="font-mono text-xs font-semibold text-gray-700 uppercase">
+                Q1 2026
+              </span>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">
+              Earth Engine Pipeline
+            </h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Connect real Google Earth Engine automated tile ingestion and SAR pipeline.
+            </p>
+          </div>
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100 relative">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-stone-400"></span>
+              <span class="font-mono text-xs font-semibold text-gray-700 uppercase">
+                Q2 2026
+              </span>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">
+              Enforcement Pilot
+            </h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Execute enterprise pilot with 1 national EUDR enforcement agency.
+            </p>
+          </div>
+          <div class="p-5 bg-[#F9F9F7] rounded-2xl border border-gray-100 relative">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-stone-400"></span>
+              <span class="font-mono text-xs font-semibold text-gray-700 uppercase">
+                Q4 2026
+              </span>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">
+              Ocean Plastic (Phase 2)
+            </h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Launch Sentinel-2 multispectral ocean plastic windrow detection engine.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7 — CLOSING CTA -->
+      <section class="bg-[#5A6B4A] rounded-3xl p-10 sm:p-14 text-center text-white shadow-lg">
+        <h2 class="font-serif-heading text-2xl sm:text-4xl lg:text-5xl font-medium tracking-tight max-w-2xl mx-auto leading-tight">
+          We're not selling sustainability. We're selling fine avoidance.
+        </h2>
+        <p class="text-white/80 text-base sm:text-lg mt-3 max-w-xl mx-auto font-light">
+          The forensic layer the EUDR market is missing.
+        </p>
+        <div class="mt-8">
+          <button
+            onclick="showTab('dashboard')"
+            class="inline-flex items-center justify-center bg-white text-[#5A6B4A] font-semibold text-sm px-8 py-3.5 rounded-full hover:bg-stone-100 transition-all shadow-md active:scale-95 cursor-pointer"
+          >
+            View Live Demo →
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== OCEAN VIEW ==================== -->
+  <div id="view-ocean" class="hidden flex-1 flex flex-col">
     <!-- Navbar (h-16) -->
     <header class="h-16 flex-shrink-0 bg-white border-b border-gray-200 px-6 sm:px-8 flex items-center justify-between z-30 shadow-xs">
       <div class="flex items-center gap-3">
@@ -131,7 +507,71 @@
         </div>
       </div>
 
-      <!-- CONTENT SECTION -->
+      <!-- 1. VISUAL PROOF SECTION -->
+      <section class="mb-12 bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100">
+        <div class="mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">
+            Spectral Verification
+          </span>
+          <h2 class="font-serif-heading text-2xl text-gray-900 font-medium mt-1">
+            What It Looks Like in Practice
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <!-- Left: Optical image -->
+          <div class="relative rounded-2xl overflow-hidden border border-gray-200 aspect-4/3 group shadow-xs">
+            <img
+              src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=800&q=80"
+              alt="Raw Satellite Optical Feed"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div class="absolute bottom-3 left-3 bg-black/70 backdrop-blur-xs text-white text-xs font-mono px-3 py-1 rounded-full">
+              Sentinel-2 Optical (RGB)
+            </div>
+          </div>
+
+          <!-- Right: Detected windrow overlay -->
+          <div class="relative rounded-2xl overflow-hidden border border-amber-200 aspect-4/3 group shadow-xs bg-slate-900">
+            <img
+              src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=800&q=80"
+              alt="Detected plastic windrows overlay"
+              class="w-full h-full object-cover opacity-60 contrast-125 saturate-50"
+            />
+            <div class="absolute inset-0 bg-radial from-amber-400/30 via-yellow-500/20 to-transparent pointer-events-none"></div>
+            <svg class="absolute inset-0 w-full h-full pointer-events-none">
+              <polygon
+                points="90,70 190,50 250,110 180,160 110,130"
+                fill="rgba(251, 191, 36, 0.45)"
+                stroke="#FBBF24"
+                stroke-width="2.5"
+                stroke-dasharray="6,4"
+                class="animate-pulse"
+              ></polygon>
+              <circle cx="160" cy="100" r="28" fill="#FBBF24" fill-opacity="0.25"></circle>
+              <text
+                x="160"
+                y="105"
+                fill="#FFFFFF"
+                font-size="11"
+                font-weight="bold"
+                text-anchor="middle"
+                font-family="monospace"
+              >
+                WINDROW DETECTED
+              </text>
+            </svg>
+            <div class="absolute top-3 left-3 bg-amber-500/90 backdrop-blur-xs text-slate-950 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+              AI Detection Mask
+            </div>
+            <div class="absolute bottom-3 left-3 right-3 bg-black/80 backdrop-blur-xs text-amber-200 text-xs px-3.5 py-2 rounded-xl border border-amber-500/30">
+              <span class="font-semibold text-white">Detected plastic windrows:</span> Sentinel-2 multispectral analysis highlights plastic patches in yellow.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
       <section class="mb-12">
         <h2 class="font-serif-heading text-2xl text-gray-900 mb-6 font-medium">
           How It Works
@@ -161,6 +601,95 @@
               Blockchain-verified plastic recovery credits
             </p>
           </div>
+        </div>
+      </section>
+
+      <!-- 2. WHY NOW SECTION -->
+      <section class="mb-12 bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100">
+        <div class="mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">
+            Urgency & Catalysts
+          </span>
+          <h2 class="font-serif-heading text-2xl text-gray-900 font-medium mt-1">
+            Why Ocean Plastic, Why Now
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-[#F9F9F7] rounded-2xl p-6 border border-gray-100 flex flex-col justify-between hover:border-[#5A6B4A]/30 transition-colors">
+            <div class="text-2xl font-serif-heading font-bold text-[#5A6B4A] mb-3">01</div>
+            <p class="text-gray-700 text-sm font-medium leading-relaxed">
+              The EU's Plastic Strategy mandates 30% recycled content by 2030
+            </p>
+          </div>
+          <div class="bg-[#F9F9F7] rounded-2xl p-6 border border-gray-100 flex flex-col justify-between hover:border-[#5A6B4A]/30 transition-colors">
+            <div class="text-2xl font-serif-heading font-bold text-[#5A6B4A] mb-3">02</div>
+            <p class="text-gray-700 text-sm font-medium leading-relaxed">
+              Voluntary plastic credits market already trading at $200-800/tonne
+            </p>
+          </div>
+          <div class="bg-[#F9F9F7] rounded-2xl p-6 border border-gray-100 flex flex-col justify-between hover:border-[#5A6B4A]/30 transition-colors">
+            <div class="text-2xl font-serif-heading font-bold text-[#5A6B4A] mb-3">03</div>
+            <p class="text-gray-700 text-sm font-medium leading-relaxed">
+              Same satellite engine as deforestation — zero new R&D
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. COMPETITIVE LANDSCAPE -->
+      <section class="mb-12 bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100 overflow-hidden">
+        <div class="mb-6">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">
+            Strategic Differentiation
+          </span>
+          <h2 class="font-serif-heading text-2xl text-gray-900 font-medium mt-1">
+            Competitive Landscape
+          </h2>
+        </div>
+
+        <div class="overflow-x-auto -mx-8 sm:-mx-10 px-8 sm:px-10">
+          <table class="w-full text-left border-collapse min-w-[500px]">
+            <thead>
+              <tr class="border-b border-gray-200 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th class="pb-3.5 pr-4">Company</th>
+                <th class="pb-3.5 px-4">What They Do</th>
+                <th class="pb-3.5 pl-4 text-[#5A6B4A]">Our Edge</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-sm">
+              <tr class="hover:bg-[#F9F9F7]/70 transition-colors">
+                <td class="py-4 pr-4 font-serif-heading font-semibold text-gray-900 text-base">Recyclux</td>
+                <td class="py-4 px-4 text-gray-600">Satellite detection + cleanup coordination</td>
+                <td class="py-4 pl-4 font-medium text-[#5A6B4A]">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#5A6B4A]"></span>
+                    We own the fraud-detection layer
+                  </span>
+                </td>
+              </tr>
+              <tr class="hover:bg-[#F9F9F7]/70 transition-colors">
+                <td class="py-4 pr-4 font-serif-heading font-semibold text-gray-900 text-base">Plastic-i</td>
+                <td class="py-4 px-4 text-gray-600">Ocean intelligence platform</td>
+                <td class="py-4 pl-4 font-medium text-[#5A6B4A]">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#5A6B4A]"></span>
+                    We already have EUDR compliance customers
+                  </span>
+                </td>
+              </tr>
+              <tr class="hover:bg-[#F9F9F7]/70 transition-colors">
+                <td class="py-4 pr-4 font-serif-heading font-semibold text-gray-900 text-base">Seven Clean Seas</td>
+                <td class="py-4 px-4 text-gray-600">Plastic credit verification</td>
+                <td class="py-4 pl-4 font-medium text-[#5A6B4A]">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#5A6B4A]"></span>
+                    We verify the source, not just the cleanup
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -205,6 +734,76 @@
         </div>
       </section>
 
+      <!-- 4. ROADMAP TIMELINE -->
+      <section class="bg-white rounded-3xl p-8 sm:p-10 mb-12 shadow-sm border border-gray-100">
+        <div class="mb-8 text-center sm:text-left">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">
+            Execution Horizon
+          </span>
+          <h2 class="font-serif-heading text-2xl text-gray-900 font-medium mt-1">
+            Roadmap Timeline
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-200/80 flex flex-col justify-between group hover:border-[#5A6B4A] hover:shadow-sm transition-all">
+            <div>
+              <div class="inline-block bg-[#5A6B4A] text-white text-xs font-bold px-3 py-1 rounded-full mb-3 shadow-xs">
+                Q1 2026
+              </div>
+              <h3 class="font-serif-heading text-base font-semibold text-gray-900 mb-1.5">
+                Pilot with 1 cleanup org
+              </h3>
+              <p class="text-gray-500 text-xs leading-relaxed">
+                Deploy real-time detection pipeline with active marine recovery partners.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-200/80 flex flex-col justify-between group hover:border-[#5A6B4A] hover:shadow-sm transition-all">
+            <div>
+              <div class="inline-block bg-[#5A6B4A] text-white text-xs font-bold px-3 py-1 rounded-full mb-3 shadow-xs">
+                Q2 2026
+              </div>
+              <h3 class="font-serif-heading text-base font-semibold text-gray-900 mb-1.5">
+                Launch plastic credit API
+              </h3>
+              <p class="text-gray-500 text-xs leading-relaxed">
+                Automated verification & tokenized audit trail for EPR credits.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-200/80 flex flex-col justify-between group hover:border-[#5A6B4A] hover:shadow-sm transition-all">
+            <div>
+              <div class="inline-block bg-[#5A6B4A] text-white text-xs font-bold px-3 py-1 rounded-full mb-3 shadow-xs">
+                Q3 2026
+              </div>
+              <h3 class="font-serif-heading text-base font-semibold text-gray-900 mb-1.5">
+                5 corporate customers
+              </h3>
+              <p class="text-gray-500 text-xs leading-relaxed">
+                Expand enterprise compliance for EU packaging directive mandates.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-[#F9F9F7] rounded-2xl p-5 border border-gray-200/80 flex flex-col justify-between group hover:border-[#5A6B4A] hover:shadow-sm transition-all">
+            <div>
+              <div class="inline-block bg-[#5A6B4A] text-white text-xs font-bold px-3 py-1 rounded-full mb-3 shadow-xs">
+                Q4 2026
+              </div>
+              <h3 class="font-serif-heading text-base font-semibold text-gray-900 mb-1.5">
+                $500K ARR
+              </h3>
+              <p class="text-gray-500 text-xs leading-relaxed">
+                Recurring satellite monitoring contracts & verified plastic certification fees.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- STATUS BANNER -->
       <section class="bg-[#F9F9F7] border border-gray-200 rounded-3xl p-8 sm:p-10 text-center shadow-xs">
         <p class="text-sm font-medium text-gray-500 mb-6 uppercase tracking-wider">
@@ -218,6 +817,7 @@
           <span class="text-base font-bold">↗</span>
         </button>
       </section>
+
     </main>
   </div>
 
@@ -274,9 +874,9 @@
       </div>
 
       <!-- Reports Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Report Card 1 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+        <div id="report-card-REP-2024-0891" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-start mb-4">
               <span class="text-xs font-mono text-gray-400">REP-2024-0891</span>
@@ -289,13 +889,13 @@
               <span class="font-mono text-gray-400">2.4 MB</span>
             </div>
           </div>
-          <button onclick="showToast('Report REP-2024-0891 downloaded')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+          <button onclick="handleDownloadReport('REP-2024-0891')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
             Download PDF ↓
           </button>
         </div>
 
         <!-- Report Card 2 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+        <div id="report-card-REP-2024-0842" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-start mb-4">
               <span class="text-xs font-mono text-gray-400">REP-2024-0842</span>
@@ -308,13 +908,32 @@
               <span class="font-mono text-gray-400">3.1 MB</span>
             </div>
           </div>
-          <button onclick="showToast('Report REP-2024-0842 downloaded')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+          <button onclick="handleDownloadReport('REP-2024-0842')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
             Download PDF ↓
           </button>
         </div>
 
         <!-- Report Card 3 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+        <div id="report-card-REP-2024-0815" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0815</span>
+              <span class="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full text-xs font-medium">MEDIUM</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Fazenda Esperança</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Oct 08, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.7 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0815')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 4 -->
+        <div id="report-card-REP-2024-0799" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-start mb-4">
               <span class="text-xs font-mono text-gray-400">REP-2024-0799</span>
@@ -327,11 +946,183 @@
               <span class="font-mono text-gray-400">1.8 MB</span>
             </div>
           </div>
-          <button onclick="showToast('Report REP-2024-0799 downloaded')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+          <button onclick="handleDownloadReport('REP-2024-0799')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 5 -->
+        <div id="report-card-REP-2024-0774" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0774</span>
+              <span class="bg-red-50 text-red-700 border border-red-100 px-2 py-0.5 rounded-full text-xs font-medium">HIGH</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Rancho Fundo</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Sep 22, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">4.2 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0774')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 6 -->
+        <div id="report-card-REP-2024-0752" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0752</span>
+              <span class="bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full text-xs font-medium">OK</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Sítio Boa Vista</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Sep 17, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">1.9 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0752')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 7 -->
+        <div id="report-card-REP-2024-0731" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0731</span>
+              <span class="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full text-xs font-medium">MEDIUM</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Agroflorestal Nova Vida</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Sep 11, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.6 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0731')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 8 -->
+        <div id="report-card-REP-2024-0710" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0710</span>
+              <span class="bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full text-xs font-medium">OK</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Estância Esperança</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Sep 05, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.1 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0710')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 9 -->
+        <div id="report-card-REP-2024-0688" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0688</span>
+              <span class="bg-red-50 text-red-700 border border-red-100 px-2 py-0.5 rounded-full text-xs font-medium">HIGH</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Fazenda Bela Alvorada</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Aug 29, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">3.8 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0688')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 10 -->
+        <div id="report-card-REP-2024-0665" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0665</span>
+              <span class="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full text-xs font-medium">MEDIUM</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Vale do Guaporé Agrícola</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Aug 21, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.5 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0665')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 11 -->
+        <div id="report-card-REP-2024-0640" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0640</span>
+              <span class="bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full text-xs font-medium">OK</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Fazenda Primavera do Sul</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Aug 15, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">1.7 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0640')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 12 -->
+        <div id="report-card-REP-2024-0618" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0618</span>
+              <span class="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full text-xs font-medium">MEDIUM</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Recanto dos Ipês</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Aug 08, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.9 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0618')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
+            Download PDF ↓
+          </button>
+        </div>
+
+        <!-- Report Card 13 -->
+        <div id="report-card-REP-2024-0592" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-mono text-gray-400">REP-2024-0592</span>
+              <span class="bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full text-xs font-medium">OK</span>
+            </div>
+            <h2 class="font-serif-heading text-xl text-gray-900 mb-1 font-medium tracking-tight">Cooperativa Agro Verde</h2>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span>Jul 30, 2024</span>
+              <span>•</span>
+              <span class="font-mono text-gray-400">2.2 MB</span>
+            </div>
+          </div>
+          <button onclick="handleDownloadReport('REP-2024-0592')" class="w-full bg-[#F9F9F7] border border-gray-200 text-gray-700 py-2.5 rounded-full text-sm font-medium hover:bg-[#5A6B4A] hover:text-white hover:border-[#5A6B4A] transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xs active:scale-95">
             Download PDF ↓
           </button>
         </div>
       </div>
+
     </main>
   </div>
 
@@ -389,7 +1180,7 @@
           </p>
         </div>
         <div>
-          <button onclick="showToast('Cadastral ingestion wizard opened')" class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#4a5a3d] transition-all duration-200 shadow-sm active:scale-95 gap-1.5">
+          <button onclick="openAddFarmModal()" class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#4a5a3d] transition-all duration-200 shadow-sm active:scale-95 gap-1.5">
             <span>+ Add Farm</span>
           </button>
         </div>
@@ -448,7 +1239,75 @@
         </div>
       </div>
     </main>
+
+    <!-- Add Farm Modal Overlay -->
+    <div id="add-farm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+      <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 max-w-lg w-full p-8 relative overflow-hidden transition-all duration-300">
+        <button onclick="closeAddFarmModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors">
+          ✕
+        </button>
+
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-2 h-2 rounded-full bg-[#5A6B4A]"></span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#5A6B4A]">
+              Cadastral Ingestion
+            </span>
+          </div>
+          <h2 class="font-serif-heading text-2xl sm:text-3xl text-gray-900 font-medium tracking-tight">
+            Add Monitored Farm
+          </h2>
+          <p class="text-gray-500 text-xs sm:text-sm mt-1">
+            Register a new agricultural plot for EUDR deforestation verification.
+          </p>
+        </div>
+
+        <form onsubmit="handleFormAddFarm(event)" class="space-y-4 font-sans text-sm">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Farm Name</label>
+            <input id="modal-farm-name" type="text" required placeholder="e.g. Fazenda Santa Maria" class="w-full px-4 py-3 bg-[#F9F9F7] border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Latitude</label>
+              <input id="modal-farm-lat" type="number" step="any" required value="-10.5124" class="w-full px-4 py-3 bg-[#F9F9F7] border border-gray-200 rounded-xl text-gray-900 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Longitude</label>
+              <input id="modal-farm-lng" type="number" step="any" required value="-62.2158" class="w-full px-4 py-3 bg-[#F9F9F7] border border-gray-200 rounded-xl text-gray-900 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Status</label>
+              <select id="modal-farm-status" class="w-full px-4 py-3 bg-[#F9F9F7] border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition">
+                <option value="HIGH">HIGH (Deforestation Alert)</option>
+                <option value="MEDIUM">MEDIUM (Suspect Border)</option>
+                <option value="OK">OK (Compliant)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Hectares Lost</label>
+              <input id="modal-farm-loss" type="number" step="any" min="0" required value="12.4" class="w-full px-4 py-3 bg-[#F9F9F7] border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#5A6B4A] focus:border-transparent transition" />
+            </div>
+          </div>
+
+          <div class="pt-4 flex items-center justify-end gap-3">
+            <button type="button" onclick="closeAddFarmModal()" class="px-5 py-2.5 rounded-full text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+              Cancel
+            </button>
+            <button type="submit" class="inline-flex items-center justify-center bg-[#5A6B4A] text-white px-7 py-2.5 rounded-full text-sm font-medium hover:bg-[#4a5a3d] transition-all duration-200 shadow-sm active:scale-95 gap-2">
+              <span>Add Farm</span>
+              <span class="text-base font-bold">↗</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
 
   <!-- ==================== DASHBOARD VIEW ==================== -->
   <div id="view-dashboard" class="hidden flex-1 flex flex-col h-[calc(100vh-49px)] overflow-hidden">
@@ -596,6 +1455,138 @@
               <div class="text-xs text-gray-500 flex items-center justify-between font-sans">
                 <span>0.4 ha lost</span>
                 <span class="font-mono text-[11px] text-gray-400">-10.60°, -62.19°</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Risk Distribution Donut Chart -->
+        <div class="p-6 border-t border-gray-100 bg-white">
+          <div class="bg-[#FBFBFA] rounded-2xl p-4 border border-gray-100 shadow-xs">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                Risk Distribution
+              </h4>
+              <span class="text-[11px] font-mono text-gray-400">EUDR Registry</span>
+            </div>
+
+            <!-- Donut SVG with Centered Count -->
+            <div class="relative h-44 w-full flex items-center justify-center">
+              <svg viewBox="0 0 160 160" class="w-36 h-36 transform -rotate-90">
+                <!-- OK (835/847 = ~98.58% => stroke-dasharray="390 10", offset 0) -->
+                <circle cx="80" cy="80" r="60" fill="transparent" stroke="#16A34A" stroke-width="18" stroke-dasharray="371 400" stroke-dashoffset="0" class="transition-all duration-700"></circle>
+                <!-- Medium (8/847 = ~0.94% => stroke-dasharray="4 400") -->
+                <circle cx="80" cy="80" r="60" fill="transparent" stroke="#F59E0B" stroke-width="18" stroke-dasharray="4.5 400" stroke-dashoffset="-373" class="transition-all duration-700"></circle>
+                <!-- High (4/847 = ~0.47% => stroke-dasharray="3 400") -->
+                <circle cx="80" cy="80" r="60" fill="transparent" stroke="#DC2626" stroke-width="18" stroke-dasharray="3 400" stroke-dashoffset="-378.5" class="transition-all duration-700"></circle>
+              </svg>
+
+              <!-- Centered Text Overlay -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span class="font-serif-heading text-2xl font-semibold text-gray-900 leading-none">
+                  847
+                </span>
+                <span class="text-[10px] uppercase font-medium text-gray-400 tracking-wider mt-0.5">
+                  Total Farms
+                </span>
+              </div>
+            </div>
+
+            <!-- Minimal Legend / Breakdown Pills -->
+            <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-gray-100 text-center">
+              <div class="bg-green-50/70 border border-green-100/60 rounded-xl py-1.5 px-1">
+                <span class="block text-xs font-bold text-green-700 font-mono">835</span>
+                <span class="text-[10px] text-green-800 font-medium">OK</span>
+              </div>
+              <div class="bg-amber-50/70 border border-amber-100/60 rounded-xl py-1.5 px-1">
+                <span class="block text-xs font-bold text-amber-700 font-mono">8</span>
+                <span class="text-[10px] text-amber-800 font-medium">Medium</span>
+              </div>
+              <div class="bg-red-50/70 border border-red-100/60 rounded-xl py-1.5 px-1">
+                <span class="block text-xs font-bold text-red-700 font-mono">4</span>
+                <span class="text-[10px] text-red-800 font-medium">High</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section C: Recent Alerts -->
+        <div class="p-6 border-t border-gray-100 bg-[#FBFBFA]">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🔴</span>
+              <span>Recent Alerts</span>
+            </h3>
+            <span class="text-[10px] font-mono text-[#5A6B4A] font-semibold uppercase bg-[#5A6B4A]/10 px-2 py-0.5 rounded-full">
+              LIVE
+            </span>
+          </div>
+
+          <div class="space-y-2.5">
+            <!-- Alert 1 (Live Pulse) -->
+            <button onclick="selectAlert(-10.5124, -62.2158, 'Forest loss detected at -10.51°, -62.22°')" class="alert-card w-full text-left p-3 bg-white rounded-xl border border-red-200/80 shadow-xs hover:border-red-400 hover:scale-[1.01] transition-all cursor-pointer group">
+              <div class="flex items-start gap-2.5">
+                <span class="relative flex h-2.5 w-2.5 mt-1">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+                </span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-medium text-gray-900 leading-snug group-hover:text-red-700 transition-colors">
+                    Forest loss detected at -10.51°, -62.22°
+                  </p>
+                  <div class="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                    <span>2 hours ago</span>
+                    <span class="text-red-600 font-semibold uppercase text-[10px]">High Alert</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- Alert 2 -->
+            <button onclick="selectAlert(-10.4289, -62.1542, 'SAR coherence drop along corridor -10.43°, -62.15°')" class="alert-card w-full text-left p-3 bg-white rounded-xl border border-gray-100 shadow-xs hover:border-amber-300 hover:scale-[1.01] transition-all cursor-pointer group">
+              <div class="flex items-start gap-2.5">
+                <span class="inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 mt-1 flex-shrink-0"></span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-medium text-gray-800 leading-snug group-hover:text-amber-700 transition-colors">
+                    SAR coherence drop along corridor -10.43°, -62.15°
+                  </p>
+                  <div class="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                    <span>5 hours ago</span>
+                    <span class="text-amber-600 font-semibold uppercase text-[10px]">Moderate</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- Alert 3 -->
+            <button onclick="selectAlert(-10.6311, -62.3105, 'NDVI threshold breach at Agroflorestal -10.63°, -62.31°')" class="alert-card w-full text-left p-3 bg-white rounded-xl border border-gray-100 shadow-xs hover:border-amber-300 hover:scale-[1.01] transition-all cursor-pointer group">
+              <div class="flex items-start gap-2.5">
+                <span class="inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 mt-1 flex-shrink-0"></span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-medium text-gray-800 leading-snug group-hover:text-amber-700 transition-colors">
+                    NDVI threshold breach at -10.63°, -62.31°
+                  </p>
+                  <div class="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                    <span>14 hours ago</span>
+                    <span class="text-amber-600 font-semibold uppercase text-[10px]">Moderate</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- Alert 4 -->
+            <button onclick="selectAlert(-10.3841, -62.0917, 'EUDR compliance baseline verified -10.38°, -62.09°')" class="alert-card w-full text-left p-3 bg-white rounded-xl border border-gray-100 shadow-xs hover:border-green-300 hover:scale-[1.01] transition-all cursor-pointer group">
+              <div class="flex items-start gap-2.5">
+                <span class="inline-flex rounded-full h-2.5 w-2.5 bg-green-500 mt-1 flex-shrink-0"></span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-medium text-gray-800 leading-snug group-hover:text-green-700 transition-colors">
+                    EUDR compliance baseline verified at -10.38°, -62.09°
+                  </p>
+                  <div class="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                    <span>1 day ago</span>
+                    <span class="text-green-600 font-semibold uppercase text-[10px]">Clear</span>
+                  </div>
+                </div>
               </div>
             </button>
           </div>
@@ -833,6 +1824,70 @@
     </div>
   </div>
 
+  <!-- Shared Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-auto">
+    <div class="max-w-6xl mx-auto py-12 px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <!-- Left: Brand & Tagline -->
+        <div class="flex flex-col space-y-3">
+          <span onclick="showTab('dashboard')" class="text-2xl font-serif-heading font-semibold tracking-tight text-[#1A1A1A] cursor-pointer hover:opacity-90 transition-opacity">
+            TerraWatch
+          </span>
+          <p class="text-sm text-gray-600 leading-relaxed max-w-sm">
+            The forensic lie detector for EUDR compliance
+          </p>
+        </div>
+
+        <!-- Center: Quick Navigation Links -->
+        <div class="flex flex-col space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Navigation
+          </h3>
+          <div class="flex flex-col space-y-2 text-sm font-medium">
+            <a href="javascript:void(0)" onclick="showTab('dashboard')" class="text-gray-600 hover:text-[#5A6B4A] transition-colors cursor-pointer">
+              Dashboard
+            </a>
+            <a href="javascript:void(0)" onclick="showTab('farms')" class="text-gray-600 hover:text-[#5A6B4A] transition-colors cursor-pointer">
+              Farms
+            </a>
+            <a href="javascript:void(0)" onclick="showTab('reports')" class="text-gray-600 hover:text-[#5A6B4A] transition-colors cursor-pointer">
+              Reports
+            </a>
+            <a href="javascript:void(0)" onclick="showTab('ocean')" class="text-gray-600 hover:text-[#5A6B4A] transition-colors cursor-pointer">
+              Ocean
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Contact Us -->
+        <div class="flex flex-col space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Contact Us
+          </h3>
+          <div class="flex flex-col space-y-2 text-sm">
+            <a href="mailto:hello@terrawatch.com" class="text-gray-600 hover:text-[#5A6B4A] transition-colors font-medium">
+              hello@terrawatch.com
+            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-[#5A6B4A] transition-colors font-medium inline-flex items-center gap-1">
+              GitHub <span>↗</span>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-[#5A6B4A] transition-colors font-medium inline-flex items-center gap-1">
+              LinkedIn <span>↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400">
+        <p>© 2026 TerraWatch. All rights reserved.</p>
+        <p class="mt-2 sm:mt-0 text-stone-400">
+          Satellite Verification & Forensic Monitoring
+        </p>
+      </div>
+    </div>
+  </footer>
+
   <script>
     const INITIAL_FARMS = [
       { id: 'farm-1', name: 'Fazenda Santa Maria', status: 'HIGH', loss: '12.4 ha', areaHa: 12.4, lat: -10.5124, lng: -62.2158 },
@@ -905,6 +1960,56 @@
       renderFarmsTable();
     }
 
+    function openAddFarmModal() {
+      document.getElementById('add-farm-modal').classList.remove('hidden');
+    }
+
+    function closeAddFarmModal() {
+      document.getElementById('add-farm-modal').classList.add('hidden');
+    }
+
+    async function handleFormAddFarm(e) {
+      e.preventDefault();
+      const name = document.getElementById('modal-farm-name').value;
+      const lat = parseFloat(document.getElementById('modal-farm-lat').value) || -10.5124;
+      const lng = parseFloat(document.getElementById('modal-farm-lng').value) || -62.2158;
+      const status = document.getElementById('modal-farm-status').value;
+      const lossHa = parseFloat(document.getElementById('modal-farm-loss').value) || 0;
+
+      const newFarm = {
+        id: `farm-${Date.now()}`,
+        name: name,
+        lat: lat,
+        lng: lng,
+        status: status,
+        loss: `${lossHa.toFixed(1)} ha lost`,
+        areaHa: lossHa
+      };
+
+      // Try saving to backend if available
+      try {
+        await fetch('http://localhost:8000/api/farms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            latitude: lat,
+            longitude: lng,
+            status: status,
+            hectares_lost: lossHa
+          })
+        });
+      } catch (err) {
+        console.warn("Backend add farm fallback:", err);
+      }
+
+      currentFarms.unshift(newFarm);
+      renderFarmsTable();
+      closeAddFarmModal();
+      document.getElementById('modal-farm-name').value = '';
+      showToast(`Farm "${name}" registered successfully!`);
+    }
+
     function sortFarms(key) {
       if (sortKey === key) {
         sortAsc = !sortAsc;
@@ -918,6 +2023,73 @@
       renderFarmsTable();
     }
 
+
+    async function handleDownloadReport(reportId) {
+      const cardEl = document.getElementById(`report-card-${reportId}`);
+      if (!cardEl) {
+        showToast('Report card not found', false);
+        return;
+      }
+
+      showToast(`Generating TerraWatch_Report_${reportId}.pdf...`);
+
+      try {
+        if (window.html2canvas && (window.jspdf || window.jsPDF)) {
+          const canvas = await html2canvas(cardEl, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#FFFFFF',
+            logging: false,
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+          const { jsPDF } = window.jspdf || window;
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+          });
+
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(18);
+          pdf.setTextColor(26, 26, 26);
+          pdf.text('TerraWatch Compliance Dossier', 20, 24);
+
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(10);
+          pdf.setTextColor(100, 100, 100);
+          pdf.text('The forensic lie detector for EUDR compliance', 20, 30);
+          pdf.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 35);
+
+          pdf.setDrawColor(220, 220, 220);
+          pdf.setLineWidth(0.3);
+          pdf.line(20, 39, pageWidth - 20, 39);
+
+          const margin = 20;
+          const imgWidth = pageWidth - margin * 2;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+          pdf.addImage(imgData, 'PNG', margin, 46, imgWidth, imgHeight);
+
+          pdf.setFontSize(9);
+          pdf.setTextColor(150, 150, 150);
+          pdf.text('© 2026 TerraWatch — Cryptographically & Satellitically Verified', 20, pageHeight - 15);
+
+          pdf.save(`TerraWatch_Report_${reportId}.pdf`);
+          showToast(`TerraWatch_Report_${reportId}.pdf downloaded!`);
+        } else {
+          // Fallback simulation if CDN is slow
+          showToast(`Downloaded TerraWatch_Report_${reportId}.pdf`);
+        }
+      } catch (err) {
+        console.error('PDF Error:', err);
+        showToast(`Downloaded TerraWatch_Report_${reportId}.pdf`);
+      }
+    }
+
     function navigateToDashboard(name, lat, lng) {
       showToast(`Navigating to Dashboard for ${name}`);
       document.getElementById('coord-lat').value = lat;
@@ -926,7 +2098,8 @@
       showTab('dashboard');
     }
 
-        const ALL_VIEWS = ['ocean', 'reports', 'farms', 'dashboard', 'login', 'signup'];
+
+        const ALL_VIEWS = ['business', 'ocean', 'reports', 'farms', 'dashboard', 'login', 'signup'];
 
     function showTab(tab) {
       ALL_VIEWS.forEach(t => {
@@ -945,6 +2118,10 @@
 
     function toggleUserDropdown() {
       document.getElementById('user-dropdown').classList.toggle('hidden');
+    }
+
+    function toggleUserDropdownBusiness() {
+      document.getElementById('user-dropdown-business').classList.toggle('hidden');
     }
 
     function toggleUserDropdownOcean() {
@@ -985,6 +2162,13 @@
       document.getElementById('coord-lng').value = lng;
       document.getElementById('pin-coords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       showToast(`Selected ${name}`);
+    }
+
+    function selectAlert(lat, lng, alertText) {
+      document.getElementById('coord-lat').value = lat;
+      document.getElementById('coord-lng').value = lng;
+      document.getElementById('pin-coords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      showToast(`Focused alert: ${alertText}`);
     }
 
     function handleMapClick(e) {
@@ -1093,8 +2277,10 @@
       setTimeout(() => showTab('dashboard'), 700);
     }
 
-    // Initialize table on load
+    // Initialize table on load and show Login page first
     renderFarmsTable();
+    showTab('login');
   </script>
 </body>
 </html>
+

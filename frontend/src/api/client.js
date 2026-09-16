@@ -191,6 +191,39 @@ export async function getFarms() {
   }
 }
 
+export async function addFarm(farmData) {
+  try {
+    const payload = {
+      name: farmData.name,
+      latitude: parseFloat(farmData.latitude || farmData.lat || 0),
+      longitude: parseFloat(farmData.longitude || farmData.lng || 0),
+      status: (farmData.status || 'OK').toUpperCase(),
+      hectares_lost: parseFloat(farmData.hectares_lost || farmData.loss || 0),
+    };
+
+    const response = await api.post('/api/farms', payload);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to add farm via API:", err);
+    // Fallback simulated farm object
+    const fallbackFarm = {
+      id: Date.now(),
+      name: farmData.name,
+      latitude: parseFloat(farmData.latitude || 0),
+      longitude: parseFloat(farmData.longitude || 0),
+      status: (farmData.status || 'OK').toUpperCase(),
+      hectares_lost: parseFloat(farmData.hectares_lost || 0),
+      loss: `${parseFloat(farmData.hectares_lost || 0)} ha lost`,
+      lat: parseFloat(farmData.latitude || 0),
+      lng: parseFloat(farmData.longitude || 0),
+      areaHa: parseFloat(farmData.hectares_lost || 0),
+    };
+    MOCK_FARMS.unshift(fallbackFarm);
+    return fallbackFarm;
+  }
+}
+
+
 export async function analyze(polygon, dateStart, dateEnd) {
   try {
     const payload = {
@@ -229,6 +262,7 @@ export async function analyze(polygon, dateStart, dateEnd) {
 const MOCK_REPORTS = [
   {
     id: 'REP-2024-0891',
+    farm_name: 'Fazenda Santa Maria',
     farmName: 'Fazenda Santa Maria',
     status: 'HIGH',
     date: 'Oct 14, 2024',
@@ -236,17 +270,99 @@ const MOCK_REPORTS = [
   },
   {
     id: 'REP-2024-0842',
+    farm_name: 'Rancho Verde Norte',
     farmName: 'Rancho Verde Norte',
     status: 'HIGH',
     date: 'Oct 12, 2024',
     fileSize: '3.1 MB',
   },
   {
+    id: 'REP-2024-0815',
+    farm_name: 'Fazenda Esperança',
+    farmName: 'Fazenda Esperança',
+    status: 'MEDIUM',
+    date: 'Oct 08, 2024',
+    fileSize: '2.7 MB',
+  },
+  {
     id: 'REP-2024-0799',
+    farm_name: 'Fazenda Rio Bonito',
     farmName: 'Fazenda Rio Bonito',
     status: 'OK',
     date: 'Sep 28, 2024',
     fileSize: '1.8 MB',
+  },
+  {
+    id: 'REP-2024-0774',
+    farm_name: 'Rancho Fundo',
+    farmName: 'Rancho Fundo',
+    status: 'HIGH',
+    date: 'Sep 22, 2024',
+    fileSize: '4.2 MB',
+  },
+  {
+    id: 'REP-2024-0752',
+    farm_name: 'Sítio Boa Vista',
+    farmName: 'Sítio Boa Vista',
+    status: 'OK',
+    date: 'Sep 17, 2024',
+    fileSize: '1.9 MB',
+  },
+  {
+    id: 'REP-2024-0731',
+    farm_name: 'Agroflorestal Nova Vida',
+    farmName: 'Agroflorestal Nova Vida',
+    status: 'MEDIUM',
+    date: 'Sep 11, 2024',
+    fileSize: '2.6 MB',
+  },
+  {
+    id: 'REP-2024-0710',
+    farm_name: 'Estância Esperança',
+    farmName: 'Estância Esperança',
+    status: 'OK',
+    date: 'Sep 05, 2024',
+    fileSize: '2.1 MB',
+  },
+  {
+    id: 'REP-2024-0688',
+    farm_name: 'Fazenda Bela Alvorada',
+    farmName: 'Fazenda Bela Alvorada',
+    status: 'HIGH',
+    date: 'Aug 29, 2024',
+    fileSize: '3.8 MB',
+  },
+  {
+    id: 'REP-2024-0665',
+    farm_name: 'Vale do Guaporé Agrícola',
+    farmName: 'Vale do Guaporé Agrícola',
+    status: 'MEDIUM',
+    date: 'Aug 21, 2024',
+    fileSize: '2.5 MB',
+  },
+  {
+    id: 'REP-2024-0640',
+    farm_name: 'Fazenda Primavera do Sul',
+    farmName: 'Fazenda Primavera do Sul',
+    status: 'OK',
+    date: 'Aug 15, 2024',
+    fileSize: '1.7 MB',
+  },
+  {
+    id: 'REP-2024-0618',
+    farm_name: 'Recanto dos Ipês',
+    farmName: 'Recanto dos Ipês',
+    status: 'MEDIUM',
+    date: 'Aug 08, 2024',
+    fileSize: '2.9 MB',
+  },
+  {
+    id: 'REP-2024-0592',
+    farm_name: 'Cooperativa Agro Verde',
+    farmName: 'Cooperativa Agro Verde',
+    status: 'OK',
+    date: 'Jul 30, 2024',
+    fileSize: '2.2 MB',
   },
 ];
 

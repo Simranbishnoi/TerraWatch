@@ -71,12 +71,43 @@ MOCK_FARMS_DATA = [
 ]
 
 
+from pydantic import BaseModel
+from typing import Optional
+
+class FarmInput(BaseModel):
+    name: str
+    latitude: float
+    longitude: float
+    status: str = "OK"
+    hectares_lost: float = 0.0
+
+
 @router.get("/")
 def get_farms(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     return MOCK_FARMS_DATA
+
+
+@router.post("/")
+def add_farm(
+    farm_in: FarmInput,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    new_farm = {
+        "id": len(MOCK_FARMS_DATA) + 1,
+        "name": farm_in.name,
+        "latitude": farm_in.latitude,
+        "longitude": farm_in.longitude,
+        "status": farm_in.status.upper() if farm_in.status else "OK",
+        "hectares_lost": farm_in.hectares_lost,
+    }
+    # Add to in-memory list for live demo session
+    MOCK_FARMS_DATA.insert(0, new_farm)
+    return new_farm
+
 
 
 

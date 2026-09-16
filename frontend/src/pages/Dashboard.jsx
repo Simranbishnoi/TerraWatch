@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { getFarms, analyze } from '../api/client';
 import Map from '../components/Map';
 import Navbar from '../components/Navbar';
+import RiskChart from '../components/RiskChart';
 
 export default function Dashboard() {
   const location = useLocation();
@@ -95,6 +96,12 @@ export default function Dashboard() {
   const handleSelectFarm = (farm) => {
     setSelectedFarm(farm);
     setCoords({ lat: farm.lat, lng: farm.lng });
+  };
+
+  // Handle alert card click
+  const handleAlertClick = (alert) => {
+    setCoords({ lat: alert.lat, lng: alert.lng });
+    toast.success(`Focused alert at ${alert.lat.toFixed(2)}°, ${alert.lng.toFixed(2)}°`);
   };
 
   // Handle map click
@@ -328,7 +335,107 @@ export default function Dashboard() {
               })}
             </div>
           </div>
+
+          {/* Section: Risk Distribution Chart */}
+          <div className="p-6 border-t border-gray-100 bg-white">
+            <RiskChart />
+          </div>
+
+          {/* Section C — "Recent Alerts" */}
+          <div className="p-6 border-t border-gray-100 bg-[#FBFBFA]">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                <span>🔴</span>
+                <span>Recent Alerts</span>
+              </h3>
+              <span className="text-[10px] font-mono text-[#5A6B4A] font-semibold uppercase bg-[#5A6B4A]/10 px-2 py-0.5 rounded-full">
+                LIVE
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {/* Alert 1 (Live Pulse) */}
+              <button
+                onClick={() => handleAlertClick({ lat: -10.5124, lng: -62.2158, name: 'Fazenda Santa Maria' })}
+                className="w-full text-left p-3 bg-white rounded-xl border border-red-200/80 shadow-xs hover:border-red-400 hover:scale-[1.01] transition-all cursor-pointer group"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="relative flex h-2.5 w-2.5 mt-1">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-900 leading-snug group-hover:text-red-700 transition-colors">
+                      Forest loss detected at -10.51°, -62.22°
+                    </p>
+                    <div className="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                      <span>2 hours ago</span>
+                      <span className="text-red-600 font-semibold uppercase text-[10px]">High Alert</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              {/* Alert 2 */}
+              <button
+                onClick={() => handleAlertClick({ lat: -10.4289, lng: -62.1542, name: 'Rancho Verde Norte' })}
+                className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 shadow-xs hover:border-amber-300 hover:scale-[1.01] transition-all cursor-pointer group"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 mt-1 flex-shrink-0"></span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-800 leading-snug group-hover:text-amber-700 transition-colors">
+                      SAR coherence drop along corridor -10.43°, -62.15°
+                    </p>
+                    <div className="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                      <span>5 hours ago</span>
+                      <span className="text-amber-600 font-semibold uppercase text-[10px]">Moderate</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              {/* Alert 3 */}
+              <button
+                onClick={() => handleAlertClick({ lat: -10.6311, lng: -62.3105, name: 'Agroflorestal Nova Vida' })}
+                className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 shadow-xs hover:border-amber-300 hover:scale-[1.01] transition-all cursor-pointer group"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 mt-1 flex-shrink-0"></span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-800 leading-snug group-hover:text-amber-700 transition-colors">
+                      Boundary anomaly flagged near -10.63°, -62.31°
+                    </p>
+                    <div className="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                      <span>12 hours ago</span>
+                      <span className="text-amber-600 font-semibold uppercase text-[10px]">Audit Req</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              {/* Alert 4 */}
+              <button
+                onClick={() => handleAlertClick({ lat: -10.3841, lng: -62.0917, name: 'Fazenda Rio Bonito' })}
+                className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 shadow-xs hover:border-emerald-300 hover:scale-[1.01] transition-all cursor-pointer group"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 mt-1 flex-shrink-0"></span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-800 leading-snug group-hover:text-emerald-700 transition-colors">
+                      Full canopy compliance verified at -10.38°, -62.09°
+                    </p>
+                    <div className="flex items-center justify-between mt-1 text-[11px] text-gray-400 font-mono">
+                      <span>1 day ago</span>
+                      <span className="text-emerald-600 font-semibold uppercase text-[10px]">Verified</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
         </aside>
+
 
         {/* RIGHT AREA — MAP (flex-1 relative) */}
         <main className="flex-1 relative h-full w-full bg-stone-900">

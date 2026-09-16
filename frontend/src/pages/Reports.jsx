@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { getReports, downloadReport } from '../api/client';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { getReports } from '../api/client';
 import Navbar from '../components/Navbar';
 
 export default function Reports() {
@@ -13,8 +15,16 @@ export default function Reports() {
     async function loadReports() {
       try {
         const data = await getReports();
-        if (isMounted && data) {
-          setReports(data);
+        // Normalize report fields if coming from backend
+        const normalized = (data || []).map((r) => ({
+          id: r.id,
+          farmName: r.farm_name || r.farmName || 'Monitored Farm',
+          status: (r.status || 'OK').toUpperCase(),
+          date: r.date || 'Oct 2024',
+          fileSize: r.fileSize || '2.4 MB',
+        }));
+        if (isMounted) {
+          setReports(normalized);
         }
       } catch (err) {
         toast.error('Failed to load reports');
@@ -29,18 +39,76 @@ export default function Reports() {
   }, []);
 
   const handleDownload = async (reportId) => {
+    const cardEl = document.getElementById(`report-card-${reportId}`);
+    if (!cardEl) {
+      toast.error('Could not find report card element');
+      return;
+    }
+
     setDownloadingId(reportId);
     try {
-      if (downloadReport) {
-        await downloadReport(reportId);
-      }
-      toast.success('Report downloaded');
+      // Capture card using html2canvas
+      const canvas = await html2canvas(cardEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      // A4 dimensions
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Add header branding to PDF
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(18);
+      pdf.setTextColor(26, 26, 26);
+      pdf.text('TerraWatch Compliance Dossier', 20, 24);
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('The forensic lie detector for EUDR compliance', 20, 30);
+      pdf.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 35);
+
+      pdf.setDrawColor(220, 220, 220);
+      pdf.setLineWidth(0.3);
+      pdf.line(20, 39, pageWidth - 20, 39);
+
+      // Calculate rendered card dimensions preserving aspect ratio
+      const margin = 20;
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', margin, 46, imgWidth, imgHeight);
+
+      // Add footer stamp
+      pdf.setFontSize(9);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(
+        '© 2026 TerraWatch — Cryptographically & Satellitically Verified',
+        20,
+        pageHeight - 15
+      );
+
+      // Save PDF with requested filename
+      pdf.save(`TerraWatch_Report_${reportId}.pdf`);
+      toast.success(`TerraWatch_Report_${reportId}.pdf downloaded!`);
     } catch (err) {
-      toast.error('Failed to download report');
+      console.error('PDF Generation Error:', err);
+      toast.error('Failed to generate PDF');
     } finally {
       setDownloadingId(null);
     }
   };
+
 
   const getRiskBadge = (status) => {
     switch (status) {
@@ -109,14 +177,16 @@ export default function Reports() {
             <span className="text-sm">Loading compliance dossiers...</span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reports.map((report) => {
               const isDownloading = downloadingId === report.id;
               return (
                 <div
                   key={report.id}
+                  id={`report-card-${report.id}`}
                   className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col justify-between"
                 >
+
                   <div>
                     {/* Top row */}
                     <div className="flex justify-between items-start mb-4">

@@ -280,10 +280,70 @@ MOCK_REPORTS_LIST = [
         "date": "2024-10-12"
     },
     {
+        "id": "REP-2024-0815",
+        "farm_name": "Fazenda Esperança",
+        "status": "MEDIUM",
+        "date": "2024-10-08"
+    },
+    {
         "id": "REP-2024-0799",
         "farm_name": "Fazenda Rio Bonito",
         "status": "OK",
         "date": "2024-09-28"
+    },
+    {
+        "id": "REP-2024-0774",
+        "farm_name": "Rancho Fundo",
+        "status": "HIGH",
+        "date": "2024-09-22"
+    },
+    {
+        "id": "REP-2024-0752",
+        "farm_name": "Sítio Boa Vista",
+        "status": "OK",
+        "date": "2024-09-17"
+    },
+    {
+        "id": "REP-2024-0731",
+        "farm_name": "Agroflorestal Nova Vida",
+        "status": "MEDIUM",
+        "date": "2024-09-11"
+    },
+    {
+        "id": "REP-2024-0710",
+        "farm_name": "Estância Esperança",
+        "status": "OK",
+        "date": "2024-09-05"
+    },
+    {
+        "id": "REP-2024-0688",
+        "farm_name": "Fazenda Bela Alvorada",
+        "status": "HIGH",
+        "date": "2024-08-29"
+    },
+    {
+        "id": "REP-2024-0665",
+        "farm_name": "Vale do Guaporé Agrícola",
+        "status": "MEDIUM",
+        "date": "2024-08-21"
+    },
+    {
+        "id": "REP-2024-0640",
+        "farm_name": "Fazenda Primavera do Sul",
+        "status": "OK",
+        "date": "2024-08-15"
+    },
+    {
+        "id": "REP-2024-0618",
+        "farm_name": "Recanto dos Ipês",
+        "status": "MEDIUM",
+        "date": "2024-08-08"
+    },
+    {
+        "id": "REP-2024-0592",
+        "farm_name": "Cooperativa Agro Verde",
+        "status": "OK",
+        "date": "2024-07-30"
     },
 ]
 
@@ -294,8 +354,32 @@ def get_farms(current_user: models.User = Depends(get_current_user)):
     return MOCK_FARMS_LIST
 
 
+class FarmInputSchema(BaseModel):
+    name: str
+    latitude: float
+    longitude: float
+    status: str = "OK"
+    hectares_lost: float = 0.0
+
+
+@app.post("/farms", tags=["Farms"])
+@app.post("/api/farms", tags=["Farms"])
+def add_farm(farm_in: FarmInputSchema, current_user: models.User = Depends(get_current_user)):
+    new_farm = {
+        "id": len(MOCK_FARMS_LIST) + 1,
+        "name": farm_in.name,
+        "latitude": farm_in.latitude,
+        "longitude": farm_in.longitude,
+        "status": farm_in.status.upper() if farm_in.status else "OK",
+        "hectares_lost": farm_in.hectares_lost,
+    }
+    MOCK_FARMS_LIST.insert(0, new_farm)
+    return new_farm
+
+
 @app.get("/reports", tags=["Reports"])
 @app.get("/api/reports", tags=["Reports"])
 def get_reports(current_user: models.User = Depends(get_current_user)):
     return MOCK_REPORTS_LIST
+
 

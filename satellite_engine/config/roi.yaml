@@ -1,0 +1,13 @@
+# Development / MVP Region of Interest
+# Rondônia, Brazil — small farm polygon
+# GeoJSON uses [longitude, latitude] ordering
+
+demo_farm:
+  name: "Demo Farm — Rondônia, Brazil"
+  type: Polygon
+  coordinates:
+    - - [-62.20, -10.50]
+      - [-62.19, -10.50]
+      - [-62.19, -10.51]
+      - [-62.20, -10.51]
+      - [-62.20, -10.50]

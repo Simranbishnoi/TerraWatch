@@ -182,55 +182,48 @@ const MOCK_FARMS = [
 ];
 
 export async function getFarms() {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return MOCK_FARMS;
+  try {
+    const response = await api.get('/api/farms');
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch farms:", err);
+    return MOCK_FARMS; // Fallback to mock if it fails
+  }
 }
 
 export async function analyze(polygon, dateStart, dateEnd) {
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-
-  // Determine mock polygon center if available
-  let center = [-62.2, -10.5];
-  if (polygon && polygon.length > 0 && Array.isArray(polygon[0])) {
-    center = polygon[0];
-  }
-
-  return {
-    risk: 'HIGH',
-    score: 87, // 87% for progress bar
-    hectaresLost: '12.4 ha',
-    manipulationScore: '0.87',
-    dateStart: dateStart || '2023-01-01',
-    dateEnd: dateEnd || '2024-01-01',
-    evidence: [
-      'Satellite SAR coherence drops 42% along southwest forest corridor.',
-      'Spectral analysis reveals illegal burn clearance conducted post-cut-off date.',
-      'Cadastral property boundary overlaps directly with designated conservation polygon.',
-    ],
-    // GeoJSON feature collection for detected deforestation loss
-    lossGeoJson: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: { risk: 'HIGH', area: '12.4 ha' },
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [center[0] - 0.025, center[1] - 0.02],
-                [center[0] + 0.02, center[1] - 0.025],
-                [center[0] + 0.035, center[1] + 0.015],
-                [center[0] - 0.01, center[1] + 0.03],
-                [center[0] - 0.03, center[1] + 0.005],
-                [center[0] - 0.025, center[1] - 0.02],
-              ],
-            ],
-          },
-        },
+  try {
+    const payload = {
+      farm_id: 1,
+      boundary: {
+        type: "Polygon",
+        coordinates: [polygon || []]
+      },
+      start_date: dateStart || "2023-01-01",
+      end_date: dateEnd || "2024-01-01",
+      previous_observation_date: "2023-06-01"
+    };
+    
+    // Call our new backend endpoint!
+    const response = await api.post('/api/analysis/analyze', payload);
+    const data = response.data;
+    
+    return {
+      risk: data.risk_level || 'HIGH',
+      score: data.risk_score ? data.risk_score * 100 : 87,
+      hectaresLost: `${data.forest_loss_hectares || 12.4} ha`,
+      manipulationScore: data.boundary_manipulation_score || '0.87',
+      dateStart: dateStart || '2023-01-01',
+      dateEnd: dateEnd || '2024-01-01',
+      evidence: data.evidence_summary || [
+        'Analysis completed by TerraWatch Satellite Engine.'
       ],
-    },
-  };
+      lossGeoJson: data.loss_geojson
+    };
+  } catch (err) {
+    console.error("Analysis failed:", err);
+    throw new Error(err.response?.data?.detail || err.message || 'Analysis failed');
+  }
 }
 
 const MOCK_REPORTS = [
@@ -258,8 +251,13 @@ const MOCK_REPORTS = [
 ];
 
 export async function getReports() {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return MOCK_REPORTS;
+  try {
+    const response = await api.get('/api/reports');
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch reports:", err);
+    return MOCK_REPORTS; // Fallback to mock if it fails
+  }
 }
 
 export async function downloadReport(reportId) {

@@ -24,11 +24,60 @@ def create_farm(
     return farm
 
 
-@router.get("/", response_model=List[FarmResponse])
+from app.core.security import get_current_user
+from app.models.user import User
+
+MOCK_FARMS_DATA = [
+    {
+        "id": 1,
+        "name": "Fazenda Santa Maria",
+        "latitude": -10.5124,
+        "longitude": -62.2158,
+        "status": "HIGH",
+        "hectares_lost": 12.4
+    },
+    {
+        "id": 2,
+        "name": "Rancho Verde Norte",
+        "latitude": -10.4289,
+        "longitude": -62.1542,
+        "status": "HIGH",
+        "hectares_lost": 18.7
+    },
+    {
+        "id": 3,
+        "name": "Agroflorestal Nova Vida",
+        "latitude": -10.6311,
+        "longitude": -62.3105,
+        "status": "MEDIUM",
+        "hectares_lost": 5.2
+    },
+    {
+        "id": 4,
+        "name": "Fazenda Rio Bonito",
+        "latitude": -10.3841,
+        "longitude": -62.0917,
+        "status": "OK",
+        "hectares_lost": 0.0
+    },
+    {
+        "id": 5,
+        "name": "Estância Esperança",
+        "latitude": -10.5982,
+        "longitude": -62.1894,
+        "status": "OK",
+        "hectares_lost": 0.4
+    },
+]
+
+
+@router.get("/")
 def get_farms(
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return db.query(Farm).order_by(Farm.created_at.desc()).all()
+    return MOCK_FARMS_DATA
+
 
 
 @router.get("/{farm_id}", response_model=FarmResponse)

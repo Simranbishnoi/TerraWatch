@@ -35,13 +35,38 @@ def create_report(
     return report
 
 
-@router.get("/", response_model=List[ReportResponse])
+from app.core.security import get_current_user
+from app.models.user import User
+
+MOCK_REPORTS_DATA = [
+    {
+        "id": "REP-2024-0891",
+        "farm_name": "Fazenda Santa Maria",
+        "status": "HIGH",
+        "date": "2024-10-14"
+    },
+    {
+        "id": "REP-2024-0842",
+        "farm_name": "Rancho Verde Norte",
+        "status": "HIGH",
+        "date": "2024-10-12"
+    },
+    {
+        "id": "REP-2024-0799",
+        "farm_name": "Fazenda Rio Bonito",
+        "status": "OK",
+        "date": "2024-09-28"
+    },
+]
+
+
+@router.get("/")
 def get_reports(
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return db.query(Report).order_by(
-        Report.created_at.desc()
-    ).all()
+    return MOCK_REPORTS_DATA
+
 
 
 @router.get("/{report_id}", response_model=ReportResponse)

@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "description": "TerraWatch satellite engine ML feature schema",
+  "features": [
+    {"name": "ndvi_before",            "type": "float", "range": [-1, 1],   "description": "Mean NDVI before observation"},
+    {"name": "ndvi_after",             "type": "float", "range": [-1, 1],   "description": "Mean NDVI after observation"},
+    {"name": "ndvi_change",            "type": "float", "range": [-2, 2],   "description": "ndvi_after - ndvi_before"},
+    {"name": "ndmi_before",            "type": "float", "range": [-1, 1],   "description": "Mean NDMI before"},
+    {"name": "ndmi_after",             "type": "float", "range": [-1, 1],   "description": "Mean NDMI after"},
+    {"name": "ndmi_change",            "type": "float", "range": [-2, 2],   "description": "ndmi_after - ndmi_before"},
+    {"name": "forest_loss_hectares",   "type": "float", "range": [0, null], "description": "Detected potential forest loss (ha)"},
+    {"name": "loss_percentage",        "type": "float", "range": [0, 100],  "description": "Loss as % of analysed area"},
+    {"name": "forest_area_before_ha",  "type": "float", "range": [0, null], "description": "Forest area before (ha)"},
+    {"name": "forest_area_after_ha",   "type": "float", "range": [0, null], "description": "Forest area after (ha)"},
+    {"name": "usable_pixel_pct",       "type": "float", "range": [0, 100],  "description": "% of cloud-free pixels"},
+    {"name": "boundary_overlap_pct",   "type": "float", "range": [0, 100],  "description": "% of loss inside farm boundary"},
+    {"name": "excluded_loss_ha",       "type": "float", "range": [0, null], "description": "Loss area outside boundary (ha)"},
+    {"name": "inside_loss_ha",         "type": "float", "range": [0, null], "description": "Loss area inside boundary (ha)"},
+    {"name": "ndvi_decline_area_ha",   "type": "float", "range": [0, null], "description": "Area with NDVI decline (ha)"},
+    {"name": "decline_pct",            "type": "float", "range": [0, 100],  "description": "% of pixels with NDVI decline"},
+    {"name": "observation_gap_days",   "type": "int",   "range": [0, null], "description": "Days between before and after observations"}
+  ]
+}

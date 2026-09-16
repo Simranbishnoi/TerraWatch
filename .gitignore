@@ -1,0 +1,23 @@
+# Environment files
+.env
+*.env
+terrawatch-backend/.env
+
+# Python virtual environment and cache
+venv/
+env/
+terrawatch-backend/venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+terrawatch-backend/terrawatch.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node / frontend
+node_modules/
+dist/
+build/

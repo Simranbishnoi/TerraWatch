@@ -12,7 +12,9 @@ from app.api.deps import get_current_user
 from app.db.database import get_db
 from app.models.analysis import Analysis
 from app.models.farm import Farm
-from app.schemas.analysis import AnalysisCreate, AnalysisResponse
+from app.models.user import User
+from app.schemas.analysis import AnalysisCreate, AnalysisResponse, SatelliteAnalysisTrigger
+from app.services.satellite_service import run_analysis_direct, run_analysis_for_farm
 
 router = APIRouter()
 

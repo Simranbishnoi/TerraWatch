@@ -1,5 +1,7 @@
 
 satellite_engine/.env
+satellite_engine/gee_credentials.json
+**/gee_credentials.json
 __pycache__/
 *.pyc
 .env

@@ -16,6 +16,13 @@ from dotenv import load_dotenv
 _ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(_ENV_PATH)
 
+# Auto-set GOOGLE_APPLICATION_CREDENTIALS if a key file is provided in .env
+_KEY_FILE = os.getenv("GEE_KEY_FILE")
+if _KEY_FILE:
+    key_path = Path(__file__).resolve().parent.parent / _KEY_FILE
+    if key_path.exists():
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(key_path)
+
 _GEE_INITIALIZED = False
 
 
@@ -55,7 +62,21 @@ def initialize_gee(project_id: str | None = None) -> None:
     project = project_id or get_project_id()
 
     try:
-        ee.Initialize(project=project)
+        credentials = None
+        if _KEY_FILE:
+            key_path = Path(__file__).resolve().parent.parent / _KEY_FILE
+            if key_path.exists():
+                from google.oauth2 import service_account
+                credentials = service_account.Credentials.from_service_account_file(
+                    str(key_path),
+                    scopes=['https://www.googleapis.com/auth/earthengine']
+                )
+
+        if credentials:
+            ee.Initialize(credentials=credentials, project=project)
+        else:
+            ee.Initialize(project=project)
+            
         _GEE_INITIALIZED = True
         print(f"[GEE] Initialized with project: {project}")
 

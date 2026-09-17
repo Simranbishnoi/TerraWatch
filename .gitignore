@@ -3,3 +3,4 @@ satellite_engine/.env
 __pycache__/
 *.pyc
 .env
+satellite_engine/config/gee_key.json
